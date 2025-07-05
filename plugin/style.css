@@ -1,0 +1,24 @@
+.smm-save-tip {
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.smm-setting-link-list .smm-setting-link-item svg {
+  height: 30px;
+  margin-right: 8px;
+  width: 30px;
+}
+
+.smm-setting-link-list .smm-setting-link-item a {
+  align-items: center;
+  display: flex;
+  text-align: left;
+}
+
+.smm-setting-sub-item {
+  padding-left: 50px;
+}
+
+.smm-setting-item-enable-select {
+  user-select: text;
+}

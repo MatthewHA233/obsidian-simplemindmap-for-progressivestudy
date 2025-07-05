@@ -1,0 +1,12 @@
+{
+  "id": "obsidian-simple-mind-map",
+  "name": "SimpleMindMap",
+  "version": "0.1.0",
+  "minAppVersion": "0.15.0",
+  "description": "simple-mind-map official plugin for obsidian",
+  "author": "wanglin",
+  "authorUrl": "https://github.com/wanglin2",
+  "fundingUrl": "",
+  "isDesktopOnly": false,
+  "permissions": ["files"]
+}
