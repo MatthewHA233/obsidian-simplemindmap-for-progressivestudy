@@ -579,12 +579,6 @@ export default class SmmSettingTab extends PluginSettingTab {
           <span>${this.plugin._t('setting.linkInfo.issues')}</span>
         </a>
       </div>
-      <div class="smm-setting-link-item">
-        <a href="https://github.com/wanglin2/mind-map/releases" target="_blank">
-          ${DESK_TOP_ICON}
-          <span>${this.plugin._t('setting.linkInfo.desktop')}</span>
-        </a>
-      </div>
     `
   }
 }

@@ -1,12 +1,11 @@
 {
-  "id": "obsidian-simple-mind-map",
-  "name": "SimpleMindMap",
+  "id": "simple-mind-map",
+  "name": "Simple mind map",
   "version": "0.1.0",
   "minAppVersion": "0.15.0",
-  "description": "simple-mind-map official plugin for obsidian",
+  "description": "A relatively powerful mind map.",
   "author": "wanglin",
   "authorUrl": "https://github.com/wanglin2",
   "fundingUrl": "",
-  "isDesktopOnly": false,
-  "permissions": ["files"]
+  "isDesktopOnly": false
 }
