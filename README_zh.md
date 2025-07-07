@@ -12,6 +12,8 @@ mind-map 也提供了独立的思维导图客户端，可以点击[客户端](ht
 
 - 思维导图本身的功能可从[mind-map](https://github.com/wanglin2/mind-map)项目了解更多。
 
+  [常见问题/使用帮助](./Help_zh.md)
+
 - 思维导图文件格式
 
   格式为：xxx.smm.md，文件内包含：元数据（文件链接、标签：simplemindmap）、压缩编码后的思维导图数据、压缩编码后的图像数据、内链数据。
