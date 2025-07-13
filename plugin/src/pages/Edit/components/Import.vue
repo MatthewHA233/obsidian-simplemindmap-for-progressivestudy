@@ -225,6 +225,11 @@ export default {
       fileReader.onload = async evt => {
         try {
           let data = markdown.transformMarkdownTo(evt.target.result)
+          if (!data) {
+            this.$root.$obsidianAPI.showTip(this.$t('import.mdImportFailTip'))
+            this.$root.$bus.$emit('hideLoading')
+            return
+          }
           this.$root.$bus.$emit('setData', data)
           this.$root.$obsidianAPI.showTip(this.$t('import.importSuccess'))
         } catch (error) {

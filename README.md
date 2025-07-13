@@ -12,8 +12,6 @@ mind-map also provides a standalone mind map client. Learn more about the [Clien
 
 - For mind map features, refer to the [mind-map](https://github.com/wanglin2/mind-map) project.
 
-  [FAQ/Help](./Help.md)
-
 - Mind Map File Format  
   Format: `xxx.smm.md`. File contents include: metadata (file links, tags: simplemindmap), compressed encoded mind map data, compressed encoded image data, and internal link data.  
   **Do not remove `.smm` when renaming files**, or it may fail to be recognized.

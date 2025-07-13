@@ -15,7 +15,8 @@ import {
   SMM_VIEW_TYPE,
   SIDE_BAR_ICON,
   SMM_TAG,
-  DEFAULT_SETTINGS
+  DEFAULT_SETTINGS,
+  IGNORE_CHECK_SMM
 } from './ob/constant.js'
 import dayjs from 'dayjs'
 import {
@@ -33,6 +34,7 @@ import zhTranslations from './locales/zh.json'
 import viTranslations from './locales/vi.json'
 import zhtwTranslations from './locales/zhtw.json'
 import { PreviewMindMap } from './ob/PreviewMindMap.js'
+import Commands from './ob/Commands.js'
 
 export default class SimpleMindMapPlugin extends Plugin {
   async onload() {
@@ -66,7 +68,7 @@ export default class SimpleMindMapPlugin extends Plugin {
     this._setCustomFileIcon()
 
     // 添加命令
-    this._addCommands()
+    this.commands = new Commands(this)
 
     // 添加右键菜单
     this._addFileMenus()
@@ -123,10 +125,11 @@ export default class SimpleMindMapPlugin extends Plugin {
         }
       } catch (error) {
         // 新建思维导图失败
+        console.error(error)
         new Notice(this._t('tip.createMindMapFail'))
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
       // 新建思维导图失败
       new Notice(this._t('tip.createMindMapFail'))
     }
@@ -146,45 +149,6 @@ export default class SimpleMindMapPlugin extends Plugin {
       default:
         return ''
     }
-  }
-
-  // 添加命令
-  _addCommands() {
-    // 新建思维导图
-    this.addCommand({
-      id: 'create-smm-mindmap',
-      name: this._t('action.createMindMap'),
-      callback: async () => {
-        this._createSmmFile()
-      }
-    })
-    // 新建思维导图并插入当前文档
-    this.addCommand({
-      id: 'create-smm-mindmap-insert-markdown',
-      name: this._t('action.createMindMapInsertToMd'),
-      editorCallback: editor => {
-        this._createSmmFile('', fileName => {
-          try {
-            const file = this.app.vault.getAbstractFileByPath(fileName)
-            const currentFile = this.app.workspace.getActiveFile()
-            if (currentFile?.extension !== 'md') {
-              // 当前文件不是markdown文件
-              new Notice(this._t('tip.fileIsNotMd'))
-              return
-            }
-            const linkText = this.app.fileManager.generateMarkdownLink(
-              file,
-              currentFile?.path || ''
-            )
-            editor.replaceSelection('!' + linkText)
-          } catch (error) {
-            console.log(error)
-            // 新建思维导图失败
-            new Notice(this._t('tip.createMindMapFail'))
-          }
-        })
-      }
-    })
   }
 
   // 添加右键菜单
@@ -214,9 +178,8 @@ export default class SimpleMindMapPlugin extends Plugin {
                 .onClick(async () => {
                   await this.app.workspace.openLinkText(file.path, '', true)
                   const leaf = this.app.workspace.getLeaf(false)
-                  const mdViewType = this.app.viewRegistry.getTypeByExtension(
-                    'md'
-                  )
+                  const mdViewType =
+                    this.app.viewRegistry.getTypeByExtension('md')
                   await leaf.setViewState({
                     type: mdViewType,
                     state: {
@@ -263,10 +226,13 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.register(
       around(Workspace.prototype, {
         getActiveViewOfType(old) {
-          return dedupe(key, old, function(...args) {
+          return dedupe(key, old, function (...args) {
             const result = old && old.apply(this, args)
-            const maybeLinkView = this.app?.workspace?.activeLeaf?.view
-            if (!maybeLinkView || !(maybeLinkView instanceof SmmEditView))
+            if (args[1] === IGNORE_CHECK_SMM) {
+              return result
+            }
+            const currentView = this.app?.workspace?.activeLeaf?.view
+            if (!currentView || !(currentView instanceof SmmEditView))
               return result
           })
         }
@@ -284,7 +250,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       this.register(
         around(WorkspaceLeaf.prototype, {
           getRoot(old) {
-            return function() {
+            return function () {
               const top = old.call(this)
               return top.getRoot === this.getRoot ? top : top.getRoot()
             }
@@ -297,12 +263,12 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.register(
       around(WorkspaceLeaf.prototype, {
         detach(next) {
-          return function() {
+          return function () {
             return next.apply(this)
           }
         },
         setViewState(next) {
-          return function(state, ...rest) {
+          return function (state, ...rest) {
             // 手动将smm视图切换为md视图不用拦截、md的预览和源码视图也不拦截
             if (
               state.state?.isSwitchToMarkdownViewFromSmmView ||
@@ -335,7 +301,7 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.register(
       around(MarkdownView.prototype, {
         onPaneMenu(next) {
-          return function(menu, source) {
+          return function (menu, source) {
             const res = next.apply(this, [menu, source])
             if (self._isSmmFile(this.file)) {
               if (source === 'more-options') {
@@ -436,7 +402,6 @@ export default class SimpleMindMapPlugin extends Plugin {
   _setCustomFileIcon() {
     if (typeof this.app.vault.setConfigFileIcon === 'function') {
       this.app.vault.setConfigFileIcon('smm.md', 'smm-icon')
-    } else {
     }
   }
 
@@ -509,9 +474,10 @@ export default class SimpleMindMapPlugin extends Plugin {
 
   // 获取生成默认思维导图数据的配置
   _getCreateDefaultMindMapOptions() {
+    const { defaultTheme, defaultThemeDark, defaultLayout } = this.settings
     return {
-      theme: this.settings.defaultTheme,
-      layout: this.settings.defaultLayout,
+      theme: this._getObIsDark() ? defaultThemeDark : defaultTheme,
+      layout: defaultLayout,
       rootNodeDefaultText: this._t('common.rootNodeDefaultText'),
       secondNodeDefaultText: this._t('common.secondNodeDefaultText'),
       branchNodeDefaultText: this._t('common.branchNodeDefaultText')
@@ -543,7 +509,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       return null
     }
     // 返回目录路径（Vault 相对路径）
-    return parent.path
+    return parent.path.replace(/\/$/, '')
   }
 
   // 获取ob是否是暗黑模式
@@ -557,5 +523,6 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.markdownPostProcessor.destroy()
     // 清理状态栏
     this.statusBarItem?.remove()
+    this.commands.clear()
   }
 }

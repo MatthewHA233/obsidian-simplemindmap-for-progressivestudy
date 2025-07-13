@@ -17,6 +17,8 @@ const createStore = () => {
         isShowScrollbar: false,
         // 是否是暗黑模式
         isDark: false,
+        // 是否显示底部工具栏
+        isShowBottomToolbar: true,
         // 自动保存时间
         autoSaveTime: 5
       },

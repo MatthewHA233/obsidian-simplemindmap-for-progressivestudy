@@ -79,7 +79,8 @@ export default {
   computed: {
     ...mapState({
       extendFontFamilyList: state => state.extendFontFamilyList,
-      supportRightFishbone: state => state.supportRightFishbone
+      supportRightFishbone: state => state.supportRightFishbone,
+      isDark: state => state.localConfig.isDark
     })
   },
   created() {
@@ -146,15 +147,13 @@ export default {
       if (!data) {
         return
       }
-      const {
-        defaultTheme,
-        defaultLayout
-      } = this.$root.$obsidianAPI.getSettings()
+      const { defaultTheme, defaultThemeDark, defaultLayout } =
+        this.$root.$obsidianAPI.getSettings()
       this.mindMapData = {
         root: data,
         layout: defaultLayout,
         theme: {
-          template: defaultTheme,
+          template: this.isDark ? defaultThemeDark : defaultTheme,
           config: {}
         }
       }

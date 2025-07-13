@@ -90,6 +90,7 @@ export default {
     imgTextMargin: '节点图片和文本间隔',
     textContentMargin: '节点各种内容间隔',
     enableAi: '显示AI功能入口',
+    isShowBottomToolbar: '显示底部工具栏',
     rootEnableUnExpand: '根节点允许收起下级',
     settingConfig: '思绪思维导图设置',
     title1: '节点',
@@ -151,7 +152,8 @@ export default {
     nodeAlgin: '一键同级节点对齐',
     removeCustomWidth: '去除自定义宽度',
     copyAsInternalUrl: '复制为ob内链',
-    removeAllCustomWidth: '一键去除所有节点自定义宽度'
+    removeAllCustomWidth: '一键去除所有节点自定义宽度',
+    download: '下载到本地'
   },
   count: {
     words: '字数',
@@ -208,7 +210,8 @@ export default {
     xmindCanvasSelectDialogTitle: '选择要导入的画布',
     mdImportDialogTitle: '粘贴Markdown内容导入',
     mdPlaceholder: '请输入Markdown格式的内容',
-    mdEmptyTip: '内容不能为空'
+    mdEmptyTip: '内容不能为空',
+    mdImportFailTip: '导入失败，没有解析到可导入内容。只支持标题、列表等语法'
   },
   navigatorToolbar: {
     openMiniMap: '开启小地图',
@@ -227,7 +230,8 @@ export default {
     exitDarkMode: '退出暗黑模式',
     darkMode: '切换为暗黑模式',
     darkModeFailTip: '切换失败，当前为跟随obsidian模式',
-    export: '导出'
+    export: '导出',
+    help: '使用帮助'
   },
   nodeHyperlink: {
     title: '超链接',

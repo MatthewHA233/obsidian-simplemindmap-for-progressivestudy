@@ -57,6 +57,7 @@ export default {
       curStepIndex: 0,
       totalStep: 0,
       inputStep: '',
+      exitDemoModeTimer: null,
       enterDemoModeTimer: null
     }
   },
@@ -76,13 +77,19 @@ export default {
   },
   beforeDestroy() {
     clearTimeout(this.enterDemoModeTimer)
+    clearTimeout(this.exitDemoModeTimer)
     this.$root.$bus.$off('demonstrate_jump', this.onJump)
     this.$root.$bus.$off('exit_demonstrate', this.onExit)
     this.$root.$bus.$off('enter_demonstrate', this.onEnterDemonstrate)
   },
   methods: {
     onEnterDemonstrate() {
+      this.enterDemoModeTimer = setTimeout(() => {
+        this.mindMap.resize()
+        this.mindMap.demonstrate.jump(0)
+      }, 1000)
       this.showDemonstrateOperations = true
+      this.mindMap.demonstrate.enter()
     },
 
     exit() {
@@ -93,7 +100,7 @@ export default {
       this.showDemonstrateOperations = false
       this.curStepIndex = 0
       this.totalStep = 0
-      this.enterDemoModeTimer = setTimeout(() => {
+      this.exitDemoModeTimer = setTimeout(() => {
         this.mindMap.resize()
       }, 1000)
     },

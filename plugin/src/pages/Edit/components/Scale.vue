@@ -110,6 +110,7 @@ export default {
 .scaleContainer {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 
   &.isDark {
     .btn {

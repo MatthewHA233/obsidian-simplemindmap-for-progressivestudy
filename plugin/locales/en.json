@@ -19,7 +19,8 @@
     "insertCodeBlockToMd": "Insert Mind Map Code Block into Current Document",
     "previewAsMindMap": "Preview as Mind Map",
     "changeToReadonly": "Change to Readonly Mode",
-    "changeToEdit": "Change to Edit Mode"
+    "changeToEdit": "Change to Edit Mode",
+    "enterDemonstrate": "Enter Mind Map Demonstration Mode"
   },
   "tip": {
     "fileExist": "File already exists",
@@ -32,7 +33,9 @@
     "integerInputError": "Please enter a number greater than 0",
     "noPreviewImage": "No preview image available",
     "insertFail": "Insertion failed",
-    "noMatchResult": "No matching results"
+    "noMatchResult": "No matching results",
+    "fileDeleted": "File has been deleted",
+    "noPreviewImageInFile": "No preview image in file"
   },
   "setting": {
     "themeMode": {
@@ -43,8 +46,10 @@
       "option3": "Dark Mode"
     },
     "theme": {
-      "title": "Default Theme",
-      "desc": "Default theme when creating a new mind map file"
+      "title": "Default theme (light color)",
+      "desc": "Default theme for creating a mind map file in light color mode",
+      "title2": "Default theme (dark color)",
+      "desc2": "Default theme for creating a mind map file in dark mode"
     },
     "layout": {
       "title": "Default Layout",
@@ -92,7 +97,8 @@
     },
     "linkInfo": {
       "issues": "Bugs and Feature Requests",
-      "desktop": "Download independent client"
+      "desktop": "Download independent client",
+      "community": "Community"
     },
     "embed": {
       "title1": "Embed Preview Double Click to Open a New Window",

@@ -206,6 +206,21 @@ export const backgroundSizeList = [
 // 快捷键列表
 export const shortcutKeyList = [
   {
+    type: 'Obsidian specific',
+    list: [
+      {
+        icon: 'iconbaocun',
+        name: 'Save and update image data',
+        value: `${ctrl} + Shfit + S`
+      },
+      {
+        icon: 'iconxinbiaoqianyedakai',
+        name: 'New tab opens hyperlink',
+        value: `${ctrl} + Left key`
+      }
+    ]
+  },
+  {
     type: 'Node operation',
     list: [
       {

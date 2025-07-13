@@ -272,6 +272,21 @@ const macFn = isMac ? 'fn + ' : ''
 // 快捷键列表
 export const shortcutKeyList = [
   {
+    type: 'Obsidian特有',
+    list: [
+      {
+        icon: 'iconbaocun',
+        name: '保存并更新图像数据',
+        value: `${ctrl} + Shfit + S`
+      },
+      {
+        icon: 'iconxinbiaoqianyedakai',
+        name: '新标签页打开超链接',
+        value: `${ctrl} + 左键`
+      }
+    ]
+  },
+  {
     type: '节点操作',
     list: [
       {

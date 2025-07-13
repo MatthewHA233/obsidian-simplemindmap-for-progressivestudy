@@ -37,6 +37,7 @@ export default {
         this.$refs.sidebar.show = true
       } else {
         this.$refs.sidebar.show = false
+        this.editor = null
       }
     }
   },

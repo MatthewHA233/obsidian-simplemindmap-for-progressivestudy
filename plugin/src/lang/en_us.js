@@ -94,6 +94,7 @@ export default {
     enableInheritAncestorLineStyle:
       'Node connection style inherits the style of ancestor nodes',
     enableAi: 'Is enable AI function',
+    isShowBottomToolbar: 'Display the bottom toolbar',
     rootEnableUnExpand: 'Does the root node allow the collapse of subordinates',
     settingConfig: 'MindmapSetting',
     title1: 'Node',
@@ -155,7 +156,8 @@ export default {
     nodeAlgin: 'One click same level node alignment',
     removeCustomWidth: 'Remove custom width',
     copyAsInternalUrl: 'Copy as internal url',
-    removeAllCustomWidth: 'One click removal of custom width for all nodes'
+    removeAllCustomWidth: 'One click removal of custom width for all nodes',
+    download: 'Download to local'
   },
   count: {
     words: 'Words',
@@ -214,7 +216,8 @@ export default {
     xmindCanvasSelectDialogTitle: 'Select the canvas to import',
     mdImportDialogTitle: 'Paste Markdown content to import',
     mdPlaceholder: 'Please enter the content in Markdown format',
-    mdEmptyTip: 'The content cannot be empty'
+    mdEmptyTip: 'The content cannot be empty',
+    mdImportFailTip: 'Import failed, no content was parsed for import. Only supports syntax such as titles and lists'
   },
   navigatorToolbar: {
     openMiniMap: 'Open mini map',
@@ -233,7 +236,8 @@ export default {
     exitDarkMode: 'Exit dark mode',
     darkMode: 'Switch to dark mode',
     darkModeFailTip: 'Switching failed, currently following Obsidian mode',
-    export: 'Export'
+    export: 'Export',
+    help: 'Help'
   },
   nodeHyperlink: {
     title: 'Link',

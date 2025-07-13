@@ -3,6 +3,10 @@
   margin-right: 10px;
 }
 
+.smm-setting-link-list .smm-setting-link-item {
+  margin-right: var(--size-4-4);
+}
+
 .smm-setting-link-list .smm-setting-link-item svg {
   height: 30px;
   margin-right: 8px;
@@ -21,4 +25,16 @@
 
 .smm-setting-item-enable-select {
   user-select: text;
+}
+
+/* ob白板 */
+.smm-canvas-node-content {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.smm-canvas-node-content img {
+  max-width: 100%;
+  max-height: 100%;
 }

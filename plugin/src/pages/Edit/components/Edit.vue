@@ -6,7 +6,10 @@
       ref="mindMapContainer"
     ></div>
     <Navigator v-if="mindMap" :mindMap="mindMap"></Navigator>
-    <NavigatorToolbar :mindMap="mindMap" v-if="!isZenMode"></NavigatorToolbar>
+    <NavigatorToolbar
+      :mindMap="mindMap"
+      v-if="!isZenMode && isShowBottomToolbar"
+    ></NavigatorToolbar>
     <OutlineSidebar :mindMap="mindMap"></OutlineSidebar>
     <Style v-if="mindMap && !isZenMode" :mindMap="mindMap"></Style>
     <BaseStyle
@@ -187,7 +190,8 @@ export default {
       useLeftKeySelectionRightKeyDrag: state =>
         state.localConfig.useLeftKeySelectionRightKeyDrag,
       extraTextOnExport: state => state.extraTextOnExport,
-      autoSaveTime: state => state.localConfig.autoSaveTime
+      autoSaveTime: state => state.localConfig.autoSaveTime,
+      isShowBottomToolbar: state => state.localConfig.isShowBottomToolbar
     })
   },
   watch: {
@@ -223,6 +227,7 @@ export default {
     this.$root.$bus.$on('startPainter', this.handleStartPainter)
     this.$root.$bus.$on('node_tree_render_end', this.handleHideLoading)
     this.$root.$bus.$on('showLoading', this.handleShowLoading)
+    this.$root.$bus.$on('hideLoading', this.hideLoading)
     this.$root.$bus.$on('windowResize', this.handleResize)
     this.$root.$bus.$on('saveToLocal', this.manuallySave)
     this.$root.$bus.$on('storeData', this.updateMindMapData)
@@ -232,6 +237,8 @@ export default {
     )
     this.$root.$bus.$on('clearAutoSave', this.clearAutoSave)
     this.$root.$bus.$on('getMindMapCurrentData', this.emitMindMapCurrentData)
+    this.$root.$bus.$on('obTabDeactivate', this.onObTabDeactivate)
+    this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
   },
   beforeDestroy() {
     this.$root.$bus.$off('execCommand', this.execCommand)
@@ -247,6 +254,7 @@ export default {
     this.$root.$bus.$off('startPainter', this.handleStartPainter)
     this.$root.$bus.$off('node_tree_render_end', this.handleHideLoading)
     this.$root.$bus.$off('showLoading', this.handleShowLoading)
+    this.$root.$bus.$off('hideLoading', this.hideLoading)
     this.$root.$bus.$off('windowResize', this.handleResize)
     this.$root.$bus.$off('saveToLocal', this.manuallySave)
     this.$root.$bus.$off('storeData', this.updateMindMapData)
@@ -256,11 +264,19 @@ export default {
     )
     this.$root.$bus.$off('clearAutoSave', this.clearAutoSave)
     this.$root.$bus.$off('getMindMapCurrentData', this.emitMindMapCurrentData)
+    this.$root.$bus.$off('obTabDeactivate', this.onObTabDeactivate)
+    this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
     clearTimeout(this.autoSaveTimer)
     clearTimeout(this.savingTimer)
     this.mindMap.destroy()
   },
   methods: {
+    onToggleReadonly(isReadonly) {
+      if (this.mindMap) {
+        this.mindMap.setMode(isReadonly ? 'readonly' : 'edit')
+      }
+    },
+
     showLoading() {
       this.loading = true
     },
@@ -430,11 +446,12 @@ export default {
               })
           })
         },
-        customHyperlinkJump: (link, node) => {
+        customHyperlinkJump: (link, node, e) => {
           const linkTitle = node.getData('hyperlinkTitle') || ''
           if (link) {
             if (!isHyperlink(link) && isObLinkText(linkTitle)) {
-              this.$root.$obsidianAPI.openFile(link)
+              const isNewTab = e.ctrlKey || e.metaKey
+              this.$root.$obsidianAPI.openFile(link, isNewTab)
             } else {
               this.$root.$obsidianAPI.openWebLink(link)
             }
@@ -540,6 +557,19 @@ export default {
       if (this.$root.$obsidianAPI.getInitLocationNodeId()) {
         this.mindMap.on('node_tree_render_end', this.onInitLocationNodeId)
       }
+    },
+
+    // 切换到其他标签页时结束一些状态
+    onObTabDeactivate() {
+      this.mindMap.renderer.textEdit.hideEditTextBox()
+      if (this.mindMap.associativeLine) {
+        this.mindMap.associativeLine.hideEditTextBox()
+      }
+      if (this.mindMap.outerFrame) {
+        this.mindMap.outerFrame.hideEditTextBox()
+      }
+      this.mindMap.emit('svg_mousedown')
+      this.mindMap.emit('draw_click')
     },
 
     // 定位到某个节点
@@ -693,9 +723,8 @@ export default {
           let svgData = ''
           if (getSvg) {
             const hasImg = checkMindTreeHasImg(data.root)
-            const {
-              compressImageIsTransparent
-            } = this.$root.$obsidianAPI.getSettings()
+            const { compressImageIsTransparent } =
+              this.$root.$obsidianAPI.getSettings()
             svgData = await this.mindMap.export(
               hasImg ? 'png' : 'svg',
               false,
@@ -743,7 +772,7 @@ export default {
     emitMindMapCurrentData() {
       try {
         const data = this.mindMap.getData(true)
-        if (!data.root) {
+        if (!data || !data.root) {
           this.$root.$obsidianAPI.showTip(this.$t('edit.savingTip2'))
           return
         }

@@ -9,6 +9,7 @@ export default class MarkdownPostProcessor {
 
     this.urlCache = new Map() // 文件路径 -> 图片URL的缓存
     this.imageElements = new Map() // 文件路径 -> 图片元素集合
+    this.emptyMap = new Map() // 文件路径 -> 当前没有预览图像的集合
 
     // 绑定事件处理器
     this.handleFileModify = this.handleFileModify.bind(this)
@@ -28,15 +29,19 @@ export default class MarkdownPostProcessor {
     this.urlCache.forEach(url => URL.revokeObjectURL(url))
     this.urlCache.clear()
     this.imageElements.clear()
+    this.emptyMap.clear()
   }
 
   async handleFileModify(file) {
     if (!(file instanceof TFile) || !this.plugin._isSmmFile(file)) return
 
     try {
-      if (!this.urlCache.has(file.path)) {
+      const noUrlCache = !this.urlCache.has(file.path)
+      const hasEmpty = this.emptyMap.has(file.path)
+      if (noUrlCache && !hasEmpty) {
         return
       }
+      const curIsNoImage = noUrlCache && hasEmpty
       // 重新生成图片URL
       const data = await this.plugin.app.vault.read(file)
       const parsedata = parseMarkdownText(data)
@@ -50,11 +55,20 @@ export default class MarkdownPostProcessor {
       if (oldUrl) URL.revokeObjectURL(oldUrl)
       this.urlCache.set(file.path, newUrl)
 
+      const emptyDiv = this.emptyMap.get(file.path)
+      if (emptyDiv) {
+        this.emptyMap.delete(file.path)
+      }
+
       // 更新所有关联的图片元素
       const elements = this.imageElements.get(file.path) || new Set()
       elements.forEach(img => {
         img.src = newUrl
       })
+      if (curIsNoImage && emptyDiv) {
+        const img = this._createSvgImageElement(newUrl, file.path)
+        emptyDiv.replaceWith(img)
+      }
     } catch (error) {
       console.error('更新图片失败:', error)
     }
@@ -68,7 +82,25 @@ export default class MarkdownPostProcessor {
     if (url) {
       URL.revokeObjectURL(url)
       this.urlCache.delete(file.path)
+      const imgs = this.imageElements.get(file.path)
+      imgs.forEach(img => {
+        const parentElement = img.parentElement
+        parentElement.empty()
+        this._createEmptyDiv(
+          parentElement,
+          file,
+          this.plugin._t('tip.fileDeleted'),
+          false
+        )
+      })
       this.imageElements.delete(file.path)
+    }
+    // 没有预览图像时修改提示信息
+    const emptyDiv = this.emptyMap.get(file.path)
+    if (emptyDiv) {
+      emptyDiv.textContent = this.plugin._t('tip.fileDeleted')
+      emptyDiv.removeEventListener('dblclick', emptyDiv.dblclickHandler)
+      this.emptyMap.delete(file.path)
     }
   }
 
@@ -115,6 +147,23 @@ export default class MarkdownPostProcessor {
     el.replaceChildren(img)
   }
 
+  _createEmptyDiv(containerEl, file, text, listenerDblclick = true) {
+    const emptyDiv = containerEl.createEl('div', { text })
+    emptyDiv.style.color = 'var(--text-muted)'
+    emptyDiv.style.border = '1px dashed var(--text-muted)'
+    emptyDiv.style.padding = '10px'
+    emptyDiv.style.borderRadius = '4px'
+    emptyDiv.style.textAlign = 'center'
+    if (listenerDblclick) {
+      emptyDiv.dblclickHandler = () => {
+        const newWindow = this.plugin.settings.embedDblClickNewWindow
+        this.plugin.app.workspace.openLinkText(file?.path, '', newWindow)
+      }
+      emptyDiv.addEventListener('dblclick', emptyDiv.dblclickHandler)
+    }
+    return emptyDiv
+  }
+
   async _processEditMode(el, ctx) {
     const file = this.plugin.app.vault.getAbstractFileByPath(ctx.sourcePath)
     if (!(file instanceof TFile) || !this.plugin._isSmmFile(file)) return
@@ -129,21 +178,21 @@ export default class MarkdownPostProcessor {
       const img = await this._createImageFromFile(file, data)
       containerEl.empty()
       if (img) {
+        this._updateImgSize(containerEl, img)
         containerEl.appendChild(img)
       } else {
-        const emptyDiv = containerEl.createEl('div', { text: '没有可预览图片' })
-        emptyDiv.style.color = 'var(--text-muted)'
-        emptyDiv.style.border = '1px dashed var(--text-muted)'
-        emptyDiv.style.padding = '10px'
-        emptyDiv.style.borderRadius = '4px'
-        emptyDiv.style.textAlign = 'center'
-        emptyDiv.addEventListener('dblclick', () => {
-          const newWindow = this.plugin.settings.embedDblClickNewWindow
-          this.plugin.app.workspace.openLinkText(file?.path, '', newWindow)
-        })
+        const emptyDiv = this._createEmptyDiv(
+          containerEl,
+          file,
+          this.plugin._t('tip.noPreviewImageInFile')
+        )
+        this.emptyMap.set(file.path, emptyDiv)
       }
       if (containerEl.hasClass('markdown-embed')) {
         containerEl.classList.remove('markdown-embed', 'inline-embed')
+      }
+      if (containerEl.hasClass('canvas-node-content')) {
+        containerEl.classList.add('smm-canvas-node-content')
       }
     } catch (error) {
       console.error(`处理编辑模式失败: ${file?.path}`, error)
@@ -163,12 +212,24 @@ export default class MarkdownPostProcessor {
         if (!(file instanceof TFile) || !this.plugin._isSmmFile(file)) continue
         const data = await this.plugin.app.vault.read(file)
         const img = await this._createImageFromFile(file, data)
+        this._updateImgSize(item, img)
         if (img) {
           item.parentElement?.replaceChild(img, item)
         }
       } catch (error) {
         console.error('处理嵌入项失败', error)
       }
+    }
+  }
+
+  _updateImgSize(containerEl, img) {
+    const width = containerEl.getAttribute('width')
+    const height = containerEl.getAttribute('height')
+    if (width) {
+      img.width = width
+    }
+    if (height) {
+      img.height = height
     }
   }
 
@@ -240,10 +301,12 @@ export default class MarkdownPostProcessor {
         return null
       }
 
+      const isExcalidraw = containerEl.classList.contains('excalidraw-md-host')
       if (
         containerEl.classList.contains('internal-embed') ||
         containerEl.classList.contains('markdown-embed') ||
-        containerEl.classList.contains('markdown-reading-view')
+        containerEl.classList.contains('markdown-reading-view') ||
+        isExcalidraw
       ) {
         return containerEl
       }

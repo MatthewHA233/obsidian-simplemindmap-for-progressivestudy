@@ -360,6 +360,16 @@
           >
         </div>
       </div>
+       <!-- 是否显示底部工具栏 -->
+      <div class="row">
+        <div class="rowItem">
+          <el-checkbox
+            v-model="localConfigs.isShowBottomToolbar"
+            @change="updateLocalConfig('isShowBottomToolbar', $event)"
+            >{{ $t('setting.isShowBottomToolbar') }}</el-checkbox
+          >
+        </div>
+      </div>
       <div class="smmSidebarGroupTitle">{{ $t('setting.title4') }}</div>
       <!-- 配置性能模式 -->
       <div class="row">
@@ -432,7 +442,8 @@ export default {
       },
       updateWatermarkTimer: null,
       localConfigs: {
-        isShowScrollbar: false
+        isShowScrollbar: false,
+        isShowBottomToolbar: true
       }
     }
   },

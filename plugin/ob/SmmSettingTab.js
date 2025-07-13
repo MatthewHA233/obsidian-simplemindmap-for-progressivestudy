@@ -1,8 +1,7 @@
 import { PluginSettingTab, Setting, Notice } from 'obsidian'
 import themeList from 'simple-mind-map-plugin-themes/themeList'
 import { layoutGroupList } from '../src/config'
-import { GITHUB_ICON, DESK_TOP_ICON } from './constant'
-import { DEFAULT_SETTINGS } from './constant'
+import { GITHUB_ICON, DEFAULT_SETTINGS, COMMUNITY_ICON } from './constant'
 import { SuggestionModal } from './SuggestionModal'
 
 const validateInteger = (value, defaultValue = 0, errorTip) => {
@@ -107,7 +106,7 @@ export default class SmmSettingTab extends PluginSettingTab {
       },
       ...themeList
     ].reverse()
-    // 默认主题
+    // 浅色模式的默认主题
     new Setting(containerEl)
       .setName(this.plugin._t('setting.theme.title'))
       .setDesc(this.plugin._t('setting.theme.desc')) // '设置默认主题'
@@ -119,6 +118,21 @@ export default class SmmSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.defaultTheme)
           .onChange(async value => {
             this.plugin.settings.defaultTheme = value
+            await this.plugin._saveSettings()
+          })
+      })
+    // 深色模式的默认主题
+    new Setting(containerEl)
+      .setName(this.plugin._t('setting.theme.title2'))
+      .setDesc(this.plugin._t('setting.theme.desc2')) // '设置默认主题'
+      .addDropdown(dropdown => {
+        allThemeList.forEach(item => {
+          dropdown.addOption(item.value, item.name)
+        })
+        dropdown
+          .setValue(this.plugin.settings.defaultThemeDark)
+          .onChange(async value => {
+            this.plugin.settings.defaultThemeDark = value
             await this.plugin._saveSettings()
           })
       })
@@ -410,8 +424,8 @@ export default class SmmSettingTab extends PluginSettingTab {
           .onClick(async () => {
             const defaultValue = DEFAULT_SETTINGS.compressImageOptionsQuality
             this.plugin.settings.compressImageOptionsQuality = defaultValue
-            const sliderEl = this.compressImageOptionsQualitySettings
-              ?.components[0]
+            const sliderEl =
+              this.compressImageOptionsQualitySettings?.components[0]
             if (sliderEl) {
               sliderEl.setValue(defaultValue)
               this.plugin.settings.compressImageOptionsQuality = defaultValue
@@ -552,19 +566,16 @@ export default class SmmSettingTab extends PluginSettingTab {
   _updateCompressImageSettingsVisibility() {
     const isVisible = this.plugin.settings.compressImage
     if (this.compressImageOptionsMaxWidthSettings) {
-      this.compressImageOptionsMaxWidthSettings.settingEl.style.display = isVisible
-        ? ''
-        : 'none'
+      this.compressImageOptionsMaxWidthSettings.settingEl.style.display =
+        isVisible ? '' : 'none'
     }
     if (this.compressImageOptionsMaxHeightSettings) {
-      this.compressImageOptionsMaxHeightSettings.settingEl.style.display = isVisible
-        ? ''
-        : 'none'
+      this.compressImageOptionsMaxHeightSettings.settingEl.style.display =
+        isVisible ? '' : 'none'
     }
     if (this.compressImageOptionsQualitySettings) {
-      this.compressImageOptionsQualitySettings.settingEl.style.display = isVisible
-        ? ''
-        : 'none'
+      this.compressImageOptionsQualitySettings.settingEl.style.display =
+        isVisible ? '' : 'none'
     }
   }
 
@@ -577,6 +588,12 @@ export default class SmmSettingTab extends PluginSettingTab {
         <a href="https://github.com/wanglin2/obsidian-simplemindmap/issues" target="_blank">
           ${GITHUB_ICON}
           <span>${this.plugin._t('setting.linkInfo.issues')}</span>
+        </a>
+      </div>
+      <div class="smm-setting-link-item">
+        <a href="https://forum.pkmer.net/" target="_blank">
+          ${COMMUNITY_ICON}
+          <span>${this.plugin._t('setting.linkInfo.community')}</span>
         </a>
       </div>
     `

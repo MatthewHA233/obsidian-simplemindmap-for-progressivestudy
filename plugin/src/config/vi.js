@@ -210,6 +210,21 @@ const macFn = isMac ? 'fn + ' : ''
 // Danh sách phím tắt
 export const shortcutKeyList = [
   {
+    type: 'Obsidian đặc biệt',
+    list: [
+      {
+        icon: 'iconbaocun',
+        name: 'Lưu và cập nhật dữ liệu hình ảnh',
+        value: `${ctrl} + Shfit + S`
+      },
+      {
+        icon: 'iconxinbiaoqianyedakai',
+        name: 'Trang nhãn mới Mở siêu kết nối',
+        value: `${ctrl} + Trái`
+      }
+    ]
+  },
+  {
     type: 'Hoạt động nút',
     list: [
       {

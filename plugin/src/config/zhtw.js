@@ -206,6 +206,21 @@ export const backgroundSizeList = [
 // 快捷鍵列表
 export const shortcutKeyList = [
   {
+    type: 'Obsidian特有',
+    list: [
+      {
+        icon: 'iconbaocun',
+        name: '保存並更新影像數據',
+        value: `${ctrl} + Shfit + S`
+      },
+      {
+        icon: 'iconxinbiaoqianyedakai',
+        name: '新標籤頁打開超連結',
+        value: `${ctrl} + 左鍵`
+      }
+    ]
+  },
+  {
     type: '節點操作',
     list: [
       {

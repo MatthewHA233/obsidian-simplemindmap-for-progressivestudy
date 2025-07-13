@@ -19,7 +19,8 @@
     "insertCodeBlockToMd": "插入思維導圖程式碼區塊到當前文件",
     "previewAsMindMap": "預覽為心智圖",
     "changeToReadonly": "切換為只讀模式",
-    "changeToEdit": "切換為編輯模式"
+    "changeToEdit": "切換為編輯模式",
+    "enterDemonstrate": "進入心智圖演示模式"
   },
   "tip": {
     "fileExist": "檔案已經存在",
@@ -32,7 +33,9 @@
     "integerInputError": "請輸入大於 0 的數字",
     "noPreviewImage": "沒有可預覽圖片",
     "insertFail": "插入失敗",
-    "noMatchResult": "暫無匹配結果"
+    "noMatchResult": "暫無匹配結果",
+    "fileDeleted": "該檔案已被删除",
+    "noPreviewImageInFile": "該檔案中沒有可預覽圖片"
   },
   "setting": {
     "themeMode": {
@@ -43,8 +46,10 @@
       "option3": "深色模式"
     },
     "theme": {
-      "title": "預設主題",
-      "desc": "新建心智圖檔案時的默認主題"
+      "title": "默認主題（淺色）",
+      "desc": "淺色模式下新建心智圖檔案時的默認主題",
+      "title2": "默認主題（深色）",
+      "desc2": "深色模式下新建心智圖檔案時的默認主題"
     },
     "layout": {
       "title": "預設結構",
@@ -92,7 +97,8 @@
     },
     "linkInfo": {
       "issues": "提交bug或建議",
-      "desktop": "獲取獨立用戶端"
+      "desktop": "獲取獨立用戶端",
+      "community": "社區"
     },
     "embed": {
       "title1": "嵌入預覽按兩下是否新窗口打開",

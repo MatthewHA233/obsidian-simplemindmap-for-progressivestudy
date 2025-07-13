@@ -47,6 +47,10 @@ class SmmEditView extends TextFileView {
     this.isOuterChange = false
     // 是否不要触发data_change事件，当外部修改数据时进行同步使用
     this.isNotTriggerDataChange = false
+    // 标签页是否处于隐藏状态
+    this.isHidden = false
+    // 标签页激活时是否需要通知思维导图刷新尺寸
+    this.needResize = false
     // 按钮元素
     this.isOutlineEditMode = false
     this.saveButton = null
@@ -112,9 +116,6 @@ class SmmEditView extends TextFileView {
       this.app.workspace.on('resize', this._handleResize.bind(this))
     )
 
-    this._onKeyup = this._onKeyup.bind(this)
-    window.addEventListener('keyup', this._onKeyup)
-
     // 在视图头部右侧添加工具按钮
     this._addActionBtns()
 
@@ -129,6 +130,9 @@ class SmmEditView extends TextFileView {
 
   // 解析加载的数据
   async setViewData(data, isClear) {
+    if (this.isHidden) {
+      return
+    }
     if (isClear) {
       this.clear()
     }
@@ -137,20 +141,22 @@ class SmmEditView extends TextFileView {
       // 空文件处理
       if (!rawData) {
         // 文件内容为空
+        console.warn('文件内容为空')
         throw new Error(this.plugin._t('tip.fileIsEmpty'))
       } else {
         this.parsedMindMapData = parseMarkdownText(rawData)
         const content = this.parsedMindMapData.metadata.content
         if (content) {
-          this.parsedMindMapData.metadata.content = LZString.decompressFromBase64(
-            content
-          )
+          this.parsedMindMapData.metadata.content =
+            LZString.decompressFromBase64(content)
+          console.warn('文件数据正常')
         } else {
+          console.warn('文件格式错误')
           throw new Error('文件格式错误')
         }
       }
     } catch (error) {
-      console.log('数据解析失败，使用默认思维导图数据', error)
+      console.error('数据解析失败，使用默认思维导图数据', error)
       rawData = createDefaultText(
         '',
         this.plugin._getCreateDefaultMindMapOptions()
@@ -245,8 +251,7 @@ class SmmEditView extends TextFileView {
         if (svgData) {
           this.parsedMindMapData.svgdata = LZString.compressToBase64(svgData)
         }
-        this._showSavingTip()
-        this.save()
+        this.forceSave()
       },
       // 获取思维导图配置
       getMindMapConfig: () => {
@@ -309,7 +314,7 @@ class SmmEditView extends TextFileView {
         }
       },
       // 打开文件
-      openFile: filePath => {
+      openFile: (filePath, isNewTab = false) => {
         if (!filePath) return
         // [[xxx#xxx]]、[[xxx^xxx]]、[[xxx|xxx]]
         const arr = filePath.split(/(#|^|\|)/)
@@ -324,7 +329,7 @@ class SmmEditView extends TextFileView {
           file = this.app.vault.getAbstractFileByPath(filePath + '.md')
         }
         if (file && file instanceof TFile) {
-          this.app.workspace.openLinkText(file.path + postfix, '')
+          this.app.workspace.openLinkText(file.path + postfix, '', isNewTab)
         }
       },
       // 核心方法：打开网页链接
@@ -431,18 +436,25 @@ class SmmEditView extends TextFileView {
       this.mindMapAPP.$bus.$emit('getMindMapCurrentData')
       this.mindMapAPP.$bus.$emit('clearAutoSave')
     }
+    if (!this.mindMapData) {
+      console.warn('数据为空，停止保存')
+      return
+    }
     await super.save()
     this._setIsUnSave(false)
     this._hideSavingTip()
   }
 
-  _onKeyup(e) {
-    if (e.ctrlKey || e.metaKey) {
-      if (e.key === 's') {
-        this._showSavingTip()
-        this.save()
-      }
-    }
+  // 强制保存
+  forceSave() {
+    this._showSavingTip()
+    this.save()
+  }
+
+  // 强制保存并更新图像数据
+  forceSaveAndUpdateImage() {
+    this._showSavingTip()
+    this.mindMapAPP.$bus.$emit('saveToLocal', true, true)
   }
 
   // 监听思维导图事件
@@ -463,8 +475,11 @@ class SmmEditView extends TextFileView {
 
   // 处理窗口大小变化
   _handleResize() {
-    // if (!this.isActive) return
-    if (!this.mindMapAPP) {
+    if (!this.mindMapAPP || this.needResize) {
+      return
+    }
+    if (this.isHidden) {
+      this.needResize = true
       return
     }
     try {
@@ -487,17 +502,26 @@ class SmmEditView extends TextFileView {
       this.isActive = true
       // 激活后刷新视图
       if (this.mindMapAPP) {
-        // 更新尺寸
-        // this._handleResize()
         // 更新外部修改
+        if (this.isHidden) {
+          this.isHidden = false
+          this._checkForExternalChanges()
+        }
+        // 更新尺寸
+        if (this.needResize) {
+          this.needResize = false
+          this._handleResize()
+        }
         if (this.isOuterChange) {
-          // await this.file.vault.read(this.file)
           this.isOuterChange = false
         }
       }
     } else if (!nowActive && this.isActive) {
       // 标签失去激活
+      const rect = this.warpEl.getBoundingClientRect()
+      this.isHidden = rect.width === 0 || rect.height === 0
       if (this.mindMapAPP) {
+        this.mindMapAPP.$bus.$emit('obTabDeactivate')
         this.save()
         this.mindMapAPP.$clearUpdateMindMapSize()
       }
@@ -510,6 +534,18 @@ class SmmEditView extends TextFileView {
     if (this.isActive) return
     if (file.path === this.file?.path) {
       this.isOuterChange = true
+    }
+  }
+
+  // 检查外部修改并更新
+  async _checkForExternalChanges() {
+    if (!this.file) return
+    try {
+      // 重新加载文件数据
+      const data = await this.app.vault.read(this.file)
+      await this.setViewData(data, false)
+    } catch (e) {
+      console.error('处理外部修改失败:', e)
     }
   }
 
@@ -532,6 +568,8 @@ class SmmEditView extends TextFileView {
     this.isUnSave = false
     this.isOuterChange = false
     this.isNotTriggerDataChange = false
+    this.isHidden = false
+    this.needResize = false
     this._resetOnOutlineEditMode()
   }
 
@@ -545,7 +583,6 @@ class SmmEditView extends TextFileView {
     this.changeToOutlineButton = null
     this.changeToMindmapButton = null
     this.toggleReadonlyButton = null
-    window.removeEventListener('keyup', this._onKeyup)
   }
 
   // 防抖函数实现
@@ -668,8 +705,7 @@ class SmmEditView extends TextFileView {
       SAVE_ICON,
       viewActions,
       () => {
-        this._showSavingTip()
-        this.mindMapAPP.$bus.$emit('saveToLocal', true, true)
+        this.forceSaveAndUpdateImage()
       }
     )
 

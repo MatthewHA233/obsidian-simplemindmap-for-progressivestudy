@@ -109,8 +109,21 @@
       >
         <span class="name">{{ $t('contextmenu.removeCustomWidth') }}</span>
       </div>
-      <div class="item" @click="exec('EXPORT_CUR_NODE_TO_PNG')">
+      <div class="item">
         <span class="name">{{ $t('contextmenu.exportNodeToPng') }}</span>
+        <span class="el-icon-arrow-right"></span>
+        <div
+          class="subItems listBox"
+          :class="{ isDark: isDark, showLeft: subItemsShowLeft }"
+          style="top: -17px"
+        >
+          <div class="item" @click="copyCurNodeAsPng">
+            {{ $t('contextmenu.copyToClipboard') }}
+          </div>
+          <div class="item" @click="exec('EXPORT_CUR_NODE_TO_PNG')">
+            {{ $t('contextmenu.download') }}
+          </div>
+        </div>
       </div>
       <div class="item" @click="exec('COPY_NODE_TO_OB_LINK')">
         <span class="name">{{ $t('contextmenu.copyAsInternalUrl') }}</span>
@@ -370,7 +383,7 @@ export default {
 
     // 鼠标按下事件
     onMousedown(e) {
-      if (e.which !== 3) {
+      if (!e || e.which !== 3) {
         return
       }
       this.mosuedownX = e.clientX
@@ -495,6 +508,25 @@ export default {
           break
       }
       this.hide()
+    },
+
+    async copyCurNodeAsPng() {
+      try {
+        const res = await this.mindMap.export(
+          'png',
+          false,
+          getTextFromHtml(this.node.getData('text')),
+          false,
+          this.node
+        )
+        const blob = await imgToDataUrl(res, true)
+        setImgToClipboard(blob)
+        this.$root.$obsidianAPI.showTip(this.$t('contextmenu.copySuccess'))
+        this.hide()
+      } catch (error) {
+        console.log(error)
+        this.$root.$obsidianAPI.showTip(this.$t('contextmenu.copyFail'))
+      }
     },
 
     // 复制到剪贴板

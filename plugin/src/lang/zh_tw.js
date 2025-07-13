@@ -91,6 +91,7 @@ export default {
     enableInheritAncestorLineStyle: '節點連線樣式繼承祖先節點的樣式',
     alwaysShowExpandBtn: '是否壹直顯示展開收起按鈕',
     enableAi: '是否開啓AI功能',
+    isShowBottomToolbar: '顯示底部工具列',
     rootEnableUnExpand: '根節點是否允許收起下級',
     settingConfig: '思緒心智圖設定',
     title1: '節點',
@@ -152,7 +153,8 @@ export default {
     nodeAlgin: '一鍵同級節點對齊',
     removeCustomWidth: '去除自定義寬度',
     copyAsInternalUrl: '複製為內鏈',
-    removeAllCustomWidth: '一鍵去除所有節點自定義寬度'
+    removeAllCustomWidth: '一鍵去除所有節點自定義寬度',
+    download: '下載到本地'
   },
   count: {
     words: '字數',
@@ -209,7 +211,8 @@ export default {
     xmindCanvasSelectDialogTitle: '選擇要匯入的畫布',
     mdImportDialogTitle: '粘貼Markdown內容導入',
     mdPlaceholder: '請輸入Markdown格式的內容',
-    mdEmptyTip: '內容不能爲空'
+    mdEmptyTip: '內容不能爲空',
+    mdImportFailTip: '導入失敗，沒有解析到可導入內容。 只支持標題、清單等語法'
   },
   navigatorToolbar: {
     openMiniMap: '開啟小地圖',
@@ -228,7 +231,8 @@ export default {
     exitDarkMode: '退出暗黑模式',
     darkMode: '切换为暗黑模式',
     darkModeFailTip: '切換失敗，當前為跟隨obsidian模式',
-    export: '匯出'
+    export: '匯出',
+    help: '使用幫助'
   },
   nodeHyperlink: {
     title: '超連結',

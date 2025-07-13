@@ -19,7 +19,8 @@
     "insertCodeBlockToMd": "插入思维导图代码块到当前文档",
     "previewAsMindMap": "预览为思维导图",
     "changeToReadonly": "切换为只读模式",
-    "changeToEdit": "切换为编辑模式"
+    "changeToEdit": "切换为编辑模式",
+    "enterDemonstrate": "进入思维导图演示模式"
   },
   "tip": {
     "fileExist": "文件已经存在",
@@ -32,7 +33,9 @@
     "integerInputError": "请输入大于0的数字",
     "noPreviewImage": "没有可预览图片",
     "insertFail": "插入失败",
-    "noMatchResult": "暂无匹配结果"
+    "noMatchResult": "暂无匹配结果",
+    "fileDeleted": "该文件已被删除",
+    "noPreviewImageInFile": "该文件中没有可预览图片"
   },
   "setting": {
     "themeMode": {
@@ -43,8 +46,10 @@
       "option3": "深色模式"
     },
     "theme": {
-      "title": "默认主题",
-      "desc": "新建思维导图文件时的默认主题"
+      "title": "默认主题（浅色）",
+      "desc": "浅色模式下新建思维导图文件时的默认主题",
+      "title2": "默认主题（深色）",
+      "desc2": "深色模式下新建思维导图文件时的默认主题"
     },
     "layout": {
       "title": "默认结构",
@@ -92,7 +97,8 @@
     },
     "linkInfo": {
       "issues": "提交bug或建议",
-      "desktop": "下载独立客户端"
+      "desktop": "下载独立客户端",
+      "community": "社区"
     },
     "embed": {
       "title1": "嵌入预览双击是否新窗口打开",

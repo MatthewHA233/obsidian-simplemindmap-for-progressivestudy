@@ -19,7 +19,8 @@
     "insertCodeBlockToMd": "Chèn khối mã sơ đồ tư duy vào tài liệu hiện tại",
     "previewAsMindMap": "Xem trước dưới dạng sơ đồ tư duy",
     "changeToReadonly": "Chuyển sang chế độ xem",
-    "changeToEdit": "Chuyển sang chế độ chỉnh sửa"
+    "changeToEdit": "Chuyển sang chế độ chỉnh sửa",
+    "enterDemonstrate": "Vào chế độ trình diễn sơ đồ tư duy"
   },
   "tip": {
     "fileExist": "Tệp đã tồn tại",
@@ -32,7 +33,9 @@
     "integerInputError": "Vui lòng nhập số lớn hơn 0",
     "noPreviewImage": "Không có hình ảnh xem trước",
     "insertFail": "Chèn thất bại",
-    "noMatchResult": "Không có kết quả phù hợp"
+    "noMatchResult": "Không có kết quả phù hợp",
+    "fileDeleted": "Tệp đã bị xóa",
+    "noPreviewImageInFile": "Không có hình ảnh xem trước trong tệp"
   },
   "setting": {
     "themeMode": {
@@ -43,8 +46,10 @@
       "option3": "Chế độ tối"
     },
     "theme": {
-      "title": "Chủ đề mặc định",
-      "desc": "Giao diện mặc định khi tạo bản đồ tư duy mới"
+      "title": "Sắc thái mặc định (màu sáng)",
+      "desc": "sắc thái mặc định khi tạo tập tin bản đồ tư duy mới trong chế độ sáng",
+      "title2": "sắc thái mặc định (đối)",
+      "desc2": "sắc thái mặc định khi tạo tập tin bản đồ tư duy mới trong chế độ tối"
     },
     "layout": {
       "title": "Cấu trúc mặc định",
@@ -92,7 +97,8 @@
     },
     "linkInfo": {
       "issues": "Gửi bug hoặc gợi ý",
-      "desktop": "Nhận khách hàng độc lập"
+      "desktop": "Nhận khách hàng độc lập",
+      "community": "Hội đồng"
     },
     "embed": {
       "title1": "Nhúng xem thử Nhấp đúp vào cửa sổ mới để mở",

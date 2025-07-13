@@ -1,7 +1,9 @@
 <template>
   <div
+    ref="navigatorContainerRef"
     class="navigatorContainer smmCustomScrollbar"
     :class="{ isDark: isDark }"
+    :style="{ maxWidth: maxWidth }"
   >
     <div
       class="item"
@@ -66,13 +68,17 @@
             <span class="iconfont iconjianpan"></span>
             {{ $t('navigatorToolbar.shortcutKeys') }}
           </el-dropdown-item>
+          <el-dropdown-item command="help">
+            <span class="iconfont iconbangzhu"></span>
+            {{ $t('navigatorToolbar.help') }}
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
     <Count
       :mindMap="mindMap"
       v-if="!isZenMode"
-      style="margin-left: 6px;"
+      style="margin-left: 6px"
     ></Count>
   </div>
 </template>
@@ -105,7 +111,7 @@ export default {
       lang: '',
       openMiniMap: false,
       showDarkChangeBtn: false,
-      enterDemoModeTimer: null
+      maxWidth: 'max-content'
     }
   },
   computed: {
@@ -120,19 +126,16 @@ export default {
     const { lang, themeMode } = this.$root.$obsidianAPI.getSettings()
     this.lang = lang || 'en'
     this.showDarkChangeBtn = themeMode !== 'follow'
-    this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$on('windowResize', this.onResize)
+  },
+  mounted() {
+    this.onResize()
   },
   beforeDestroy() {
-    clearTimeout(this.enterDemoModeTimer)
-    this.enterDemoModeTimer = null
-    this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$off('windowResize', this.onResize)
   },
   methods: {
     ...mapMutations(['setLocalConfig', 'setActiveSidebar']),
-
-    onToggleReadonly(isReadonly) {
-      this.mindMap.setMode(isReadonly ? 'readonly' : 'edit')
-    },
 
     toggleMiniMap() {
       this.openMiniMap = !this.openMiniMap
@@ -171,7 +174,13 @@ export default {
     handleCommand(command) {
       if (command === 'shortcutKey') {
         this.setActiveSidebar('shortcutKey')
-        return
+      } else if (command === 'help') {
+        const a = document.createElement('a')
+        a.href = ['zh', 'zhtw'].includes(this.$i18n.locale)
+          ? 'https://github.com/wanglin2/obsidian-simplemindmap/blob/main/Help_zh.md'
+          : 'https://github.com/wanglin2/obsidian-simplemindmap/blob/main/Help.md'
+        a.target = '_blank'
+        a.click()
       }
     },
 
@@ -180,12 +189,15 @@ export default {
     },
 
     enterDemoMode() {
-      this.enterDemoModeTimer = setTimeout(() => {
-        this.mindMap.resize()
-        this.mindMap.demonstrate.jump(0)
-      }, 1000)
       this.$root.$bus.$emit('enter_demonstrate')
-      this.mindMap.demonstrate.enter()
+    },
+
+    onResize() {
+      const el = document.querySelector('.status-bar')
+      if (!el) return
+      const nRect = this.$refs.navigatorContainerRef.getBoundingClientRect()
+      const eRect = el.getBoundingClientRect()
+      this.maxWidth = eRect.left - nRect.left + 'px'
     }
   }
 }
@@ -200,10 +212,11 @@ export default {
   background: hsla(0, 0%, 100%, 0.8);
   border-radius: 5px;
   opacity: 0.8;
-  height: 40px;
+  min-height: 40px;
   font-size: 12px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 
   &.isDark {
     background: #262a2e;

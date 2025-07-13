@@ -95,6 +95,7 @@ export default {
     enableInheritAncestorLineStyle:
       'Kiểu kết nối nút kế thừa kiểu của nút tổ tiên',
     enableAi: 'Bật chức năng AI',
+    isShowBottomToolbar: 'Hiện thanh công cụ dưới cùng',
     rootEnableUnExpand:
       'Liệu root node có cho phép thu hồi cấp dưới hay không?',
     settingConfig: 'Thiết lập Mind Map',
@@ -158,7 +159,8 @@ export default {
     removeCustomWidth: 'Loại bỏ chiều rộng tùy chỉnh',
     copyAsInternalUrl: 'Sao chép như một chuỗi bên trong',
     removeAllCustomWidth:
-      'Loại bỏ tất cả các nút chiều rộng tùy chỉnh với một cú nhấp chuột'
+      'Loại bỏ tất cả các nút chiều rộng tùy chỉnh với một cú nhấp chuột',
+    download: 'Tải xuống'
   },
   count: {
     words: 'Từ',
@@ -215,7 +217,8 @@ export default {
     xmindCanvasSelectDialogTitle: 'Chọn canvas để nhập',
     mdImportDialogTitle: 'Dán nội dung Markdown để nhập',
     mdPlaceholder: 'Vui lòng nhập nội dung ở định dạng Markdown',
-    mdEmptyTip: 'Nội dung không được trống'
+    mdEmptyTip: 'Nội dung không được trống',
+    mdImportFailTip: 'Nhập thất bại, không phân tích cú pháp để nhập nội dung. Chỉ hỗ trợ cú pháp như tiêu đề, danh sách, v.v.'
   },
   navigatorToolbar: {
     openMiniMap: 'Mở bản đồ thu nhỏ',
@@ -235,7 +238,8 @@ export default {
     darkMode: 'Chuyển sang chế độ Dark Mode',
     darkModeFailTip:
       'Chuyển đổi không thành công, hiện đang theo chế độ obsidian',
-    export: 'Xuất'
+    export: 'Xuất',
+    help: 'Trợ giúp'
   },
   nodeHyperlink: {
     title: 'Liên kết',
