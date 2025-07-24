@@ -1,133 +1,182 @@
-【English | [简体中文](./README_zh.md)】
+【[English](./README.md) | 简体中文】
 
-# SimpleMindMap Obsidian Plugin
+# SimpleMindMap Obsidian 插件
 
-Provides a user-friendly mind map plugin for Obsidian.
+为 Obsidian 提供一个好用的思维导图插件。
 
-The mind map functionality is built upon the [mind-map](https://github.com/wanglin2/mind-map) project, which offers a JavaScript mind map library and a complete online version.
+本插件思维导图功能建立在[mind-map](https://github.com/wanglin2/mind-map)项目之上，mind-map 项目提供了一个 js 思维导图库，以及一个完整的在线版思维导图。
 
-mind-map also provides a standalone mind map client. Learn more about the [Client](https://github.com/wanglin2/mind-map/releases).
+mind-map 也提供了独立的思维导图客户端，可以点击[客户端](https://github.com/wanglin2/mind-map/releases)了解更多。
 
-# Feature List
+# 功能清单
 
-- For mind map features, refer to the [mind-map](https://github.com/wanglin2/mind-map) project.
+- 思维导图本身的功能可从[mind-map](https://github.com/wanglin2/mind-map)项目了解更多，也可以在这里查[看常见问题](./Help_zh.md)。
 
-- Mind Map File Format  
-  Format: `xxx.smm.md`. File contents include: metadata (file links, tags: simplemindmap), compressed encoded mind map data, compressed encoded image data, and internal link data.  
-  **Do not remove `.smm` when renaming files**, or it may fail to be recognized.
+- 思维导图文件格式
 
-- Views  
-  `xxx.smm.md` files open in mind map view by default. To open in Markdown view:  
-  Method 1: Right-click the file → 【Open as Markdown Document】  
-  Method 2: In mind map view → Top-right 【More】 button → 【Open as Markdown Document】
-  There will be a guide prompt when entering the plugin for the first time
+  格式为：xxx.smm.md，文件内包含：元数据（文件链接、标签：simplemindmap）、压缩编码后的思维导图数据、压缩编码后的图像数据、内链数据。
 
-- Create New Mind Map Files  
-  Three methods:  
-  
-  1. Click the ribbon icon on the left  
-  2. Right-click folder → 【New Mind Map】  
-3. Use command: 【New Mind Map】  
-  
-- Commands  
-  Plugin provides Obsidian commands:  
-  1. New Mind Map  
-  
-  2. New Mind Map and Insert into Current Document (md file)  
+  修改文件名时请不要将.smm 去掉，否则可能无法正确识别。
 
-  Type 【smm】 to quickly search for commands.
-  
-- Settings  
-  Plugin settings include:  
-  1. Theme mode (Dark/Light/Follow Obsidian)  
-  2. Default theme  
-  3. Default structure  
-  4. There are three ways to set the storage directory for mind map files: repository root directory, specified folder, and the folder where the current file is located, The directory supports both input and selection methods
-  5. The image file storage directory and file storage directory support four ways of setting: warehouse root directory, specified folder, folder where the current file is located, and specified subfolders under the folder where the current file is located
-  6. Auto-save time after inactivity  
-  7. When embedding preview, double-click to open a new window
-  8. Is the embedded preview background transparent
-  9. Create a prefix and date timestamp format for the file name of a new mind map
+- 视图
 
-- Multilingual Support  
-  Supports Chinese, English, Vietnamese, Traditional Chinese. Automatically switches with Obsidian language.
+  xxx.smm.md 文件默认会以思维导图视图打开，也可以以 Markdown 视图打开：
+  方法1.点击思维导图文件右键菜单中的【打开为 Markdown 文档】菜单；
+  方法2.思维导图视图中点击右上角【更多】按钮打开下拉菜单，选择【打开为 Markdown 文档】菜单；
+  首次进入插件时会有引导提示；
 
-- Obsidian Internal Links  
-  - Add Obsidian file links to node hyperlinks:  
-    1. Activate a node  
-    2. Click 【Hyperlink】 icon in toolbar  
-    3. Switch to 【Obsidian File】 in popup  
-    4. Select an Obsidian file (supports search)  
-    5. Click 【Add】  
-    6. Click node's hyperlink icon to open linked file  
-    7. Hyperlink icons distinguish between websites and Obsidian files.  
-  - Internal links are stored in file data for Obsidian backlink parsing.
-  - Hyperlinks support adding local files:
-    1.Switch to 'Local Files' in the pop-up window that opens, and the selected file will be uploaded to the vault;
-    2.The storage path for uploading files can be modified in the settings (files that Obsidian cannot recognize may not be displayed in the list and can be opened and viewed through the computer resource manager);
+- 新建思维导图文件
 
-- Custom Icon Buttons (Top-right of Mind Map View)  
-  - **Save and Update Image Data**:  
-    Saves data + exports mind map as image → Embeds ![[]] in Markdown.  
-  - **Export**: Opens export dialog.  
-  - **Import**: Opens import dialog.  
-  - **Switch to Outline Mode**:  
-    1. Toggles outline editing mode.  
-    2. 【Save】 replaces 【Save and Update Image Data】; 【Export】 hides; 【Print Outline】 appears.  
-    3. Button becomes 【Switch to Mind Map Mode】 to revert.  
-  - Switch between read-only/edit mode:
-    After switching to read-only mode, the save , import and export buttons will be hidden
-  - **Saving Status**: 【Saving...】 appears left of save button.
+  提供三种方式：
 
-- Split View Synchronization  
-  1. Two mind map views: Edits sync after save.  
-  2. Mind map + Outline views: Edits sync after save.
+  1.点击左侧的 Ribbon 图标；
+  2.点击文件夹右键菜单中的【新建思维导图】；
+  3.使用命令【新建思维导图】；
 
-- Embed Preview  
-  Embed mind map files via ![[]] in Markdown:  
-  
-  - Displays image if available; double-click opens file.  
-  - Shows 【No preview image available】 if no image; double-click opens file.  
-  - **Requires manual trigger** of 【Save and Update Image Data】. Auto-save doesn't update images.  
-  - Embedded previews auto-update when source file changes.  
-  - If there is image data in the mind map, the embedded image should be in PNG format; otherwise, it should be in SVG format.
-  - Support setting whether the embedded image background is transparent in the settings.
-- Adjust width: `[[xxx.smm|300]]`.
-  
-- Status Bar (Bottom-right)  
-  Hides Obsidian's word/character count.  
-  Shows mind map word count and node count.
+- 命令
 
-- Persistent Settings  
-  Changes in 【Basic Style】/【Settings】 sidebar persist in plugin config.
+  插件提供了一些 Obsidian命令：
+  1.新建思维导图；
+  2.新建思维导图并插入当前文档（md 文档）；
 
-- Node Images  
-  - Select images from current Vault in node image dialog.  
-  - Images pasted/dragged into nodes upload to Vault (folder configurable in settings).  
-  - Drag Vault images directly into dialog.  
-  - Format conversions during import/export (smm/json/xmind):  
-    - Imports: Convert base64 images → Upload to Vault  
-    - Exports: Convert Vault images → base64  
-  - Supports compressing uploaded images. Whether to enable compression and the compression parameters can be modified in the settings
+  可输入【smm】快速查询。
 
-- Context Menus  
-  - Canvas right-click: 【Copy as Obsidian Internal Link】 copies file link format.  
-  - Node right-click: 【Copy as Obsidian Internal Link】 copies link with node ID (opens at specific node).
+- 设置
 
-- Preview Markdown document as a mind map
+  插件提供了一些设置：
 
-  Add the 'Preview as Mind Map' option to the Markdown document view menu, which will display a pop-up window to render the document content through a mind map. It supports switching between structure and theme, and can be exported as PNG, SVG, or PDF files.
+  1.主题模式（暗黑、浅色、跟随 ob）；
+  2.默认主题；
+  3.默认结构；
+  4.思维导图文件存储目录支持设置三种方式：仓库根目录、指定文件夹、当前文件所在的文件夹；目录支持输入和选择两种方式；
+  5.图片文件存储目录、文件存储目录支持设置四种方式：仓库根目录、指定文件夹、当前文件所在的文件夹、当前文件所在文件夹下指定的子文件夹；
+  6.无操作自动保存时间；
+  7.![[]]嵌入预览时双击是否新窗口打开；
+  8.![[]]嵌入预览背景是否透明；
+  9.新建思维导图文件名的前缀和日期时间戳格式；
 
-# Limitations
+- 多语言
 
-- No support for standalone window editing
-- Some UI components don't sync with Obsidian theme colors
+  插件支持中文、英文、越南语、繁体。无需手动设置，会跟随 Obsidian 语言自动切换。
 
-# Future Plans
+- Obsidian 内链
 
-- Mobile adaptation
-- Embed other documents in nodes via preview mode
+  - 节点超链接支持插入 Obsidian 文件链接：
+    1.激活一个节点；
+    2.点击顶部工具栏中的【超链接】图标；
+    3.在打开的弹窗中切换到【Obsidian 文件】；
+    4.选择一个 Obsidian 文件（支持搜索）；
+    5.点击【添加】按钮；
+    6.添加后点击节点的超链接图标可打开链接的文件；
+    7.超链接图标会区分普通网址和Obsidian 文件；
 
-# Bugs/Suggestions/Requests
+  - 节点超链接中的内链会自动同步到文件数据中以内链格式存储，提供给 Obsidian 解析双链；
 
-Submit via [Issues](https://github.com/wanglin2/obsidian-simplemindmap/issues).
+  - 超链接支持添加本地文件：
+    1.在打开的弹窗中切换到【本地文件】，选择的文件会上传到Vault中；
+    2.上传文件的存储路径可以在设置中修改（Obsidian无法识别的文件可能不会在列表中显示，可以通过电脑资源管理器方式打开查看）；
+
+- 思维导图视图右上角自定义的图标按钮介绍
+
+  - 保存并更新图像数据
+
+    点击后会保存当前数据，同时会将当前的思维导图导出为图像数据并更新到文件中，然后在 Markdown 文档中以 ![[]] 格式嵌入后会自动显示该图片。
+
+  - 导出
+
+    点击后会打开导出弹窗。
+
+  - 导入
+
+    点击后会打开导入弹窗。
+
+  - 切换为大纲模式
+
+    1.点击后会切换为大纲编辑模式；
+    2.切换为大纲编辑模式后【保存并更新图像数据】按钮会切换为【保存】按钮，不会更新图像数据；会隐藏【导出】按钮；会新增【打印大纲】按钮；
+    3.【切换为大纲模式】按钮会显示为【切换为思维导图模式】，点击可切换回思维导图模式编辑；
+
+  - 切换只读/编辑模式
+
+    切换为只读模式后会隐藏保存、导入、导出按钮；
+
+  - 保存按钮左侧会显示保存中的提示：【保存中...】
+
+- 拆分模式下的同步
+  1.拆分为两个思维导图模式编辑，编辑其中一个，并且触发保存后，另一个也会同步更新；
+  2.拆分为一个思维导图模式编辑、一个大纲模式编辑模式，编辑其中一个，并且触发保存后，另一个也会同步更新；
+
+- 嵌入预览
+  支持以 ![[]] 格式在 Markdown 文档中嵌入思维导图文件，如果文件中存在图像数据，那么会显示该图像，双击图像可打开文件，否则会提示：【没有可预览图片】，双击也可切换到该思维导图文件；
+
+  图像数据需使用【保存并更新图像数据】按钮手动触发保存和更新，自动保存不会更新图像数据。
+
+  如果同时打开了思维导图文件和嵌入了该思维导图文件的 Markdown 文档，那么思维导图图像更新后，Markdown 文档中的预览图像也会自动更新。
+
+  如果思维导图中存在图片数据，那么嵌入的图像为png格式，否则为svg格式；
+
+  支持在设置中设置嵌入的图像背景是否透明；
+
+  图像可调整宽度：[[xxx.smm|300]]。
+
+- 思维导图视图右下角的状态栏
+  隐藏了 Obsidian 自带的词、字符统计。
+
+  新增思维导图的字数、节点数统计。
+
+- 思维导图设置持久化
+
+  思维导图视图右侧侧边栏中的【基础样式】、【设置】中的修改会同步到插件配置中进行持久化存储。
+
+- 节点图片
+  节点图片弹窗中支持选择当前 Vault 中的图片文件。
+
+  从电脑中选择的图片文件和激活节点直接粘贴的图片会上传到 Vault 中，存储的文件夹可以在设置中修改。另外选择的背景图片也会上传到 vault 中。
+
+  可直接从 Vault 的文件列表中拖拽图片到弹窗中添加。
+
+  导入导出为 smm、json、xmind 文件格式时会转换其中的图片数据：
+
+  ​	1.导入时会解析其中的 base64 格式的图片并上传到 Vault中；
+
+  ​	2.导出时会将 Vault 路径的图片文件转换为 base64 格式；
+
+  支持压缩上传的图片，是否开启压缩及压缩参数可在设置中修改；
+
+- 右键菜单
+  画布的右键菜单中提供【复制为 ob 内链】菜单，点击可复制当前文件为 Obsidian 的内链格式，可粘贴插入到其他文档。
+
+  节点的右键菜单中提供【复制为 ob 内链】菜单，点击可复制当前文件为 Obsidian 的内链格式，和画布右键菜单中的该菜单不一样，会带上当前节点的 id，当粘贴插入到其他文档中，点击打开时可自动定位到该节点。
+
+- 将Markdown文档预览为思维导图
+
+  Markdown文档视图更多菜单中增加【预览为思维导图】选项，点击后显示一个弹窗将文档内容通过思维导图渲染出来，支持切换结构、主题，可导出为png、svg、pdf文件；
+
+# 限制
+
+- 不支持独立窗口编辑
+- 部分 UI 组件的主题色无法同步 Obsidian 的主题色
+
+# 未来
+
+- 适配手机端
+- 支持以预览模式在节点中嵌入其他文档
+
+# bug、建议、需求
+
+有任何bug、建议、需求反馈可在[Issues](https://github.com/wanglin2/obsidian-simplemindmap/issues)里提交。
+
+# 微信公众号
+
+<table>
+    <tr>
+        <td align="center" style="word-wrap: break-word; width: 75.0; height: 75.0">
+            <a href="#">
+                <img src="./gzh.jpeg" width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px"/>
+                <br />
+                <sub style="font-size:14px"><b>微信公众号</b></sub>
+            </a>
+        </td>
+    </tr>
+</table>
+
