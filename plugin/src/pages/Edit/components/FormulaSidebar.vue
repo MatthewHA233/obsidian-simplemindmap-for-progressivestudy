@@ -102,9 +102,6 @@ export default {
     },
 
     confirm() {
-      if (!this.localConfig.openNodeRichText) {
-        return this.$root.$obsidianAPI.showTip(this.$t('formulaSidebar.tip'))
-      }
       let str = this.formulaText.trim()
       if (!str) return
       this.mindMap.execCommand('INSERT_FORMULA', str)

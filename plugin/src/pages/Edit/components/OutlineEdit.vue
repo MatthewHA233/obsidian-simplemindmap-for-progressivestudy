@@ -1,6 +1,19 @@
 <template>
   <div class="smmOutlineEditContainer" :class="{ isDark: isDark }">
-    <div class="tip">
+    <div
+      class="mobileActions"
+      v-if="isMobile"
+      :class="{ disabled: !currentData }"
+    >
+      <span class="iconBtn iconfont iconjiedian" @click="insertNode"></span>
+      <span
+        class="iconBtn iconfont icontianjiazijiedian"
+        @click="insertChildNode"
+      ></span>
+      <span class="iconBtn iconfont iconshangyi" @click="upLevel"></span>
+      <span class="iconBtn iconfont iconshanchu" @click="deleteNode"></span>
+    </div>
+    <div class="tip" v-else>
       <span class="tipItem">{{ $t('outline.tip1') }}Enter</span>
       <span class="tipItem">{{ $t('outline.tip2') }}Tab</span>
       <span class="tipItem">{{ $t('outline.tip3') }}Shift + Tab</span>
@@ -73,6 +86,7 @@ export default {
         label: 'label'
       },
       currentData: null,
+      currentNode: null,
       autoSaveTimer: null
     }
   },
@@ -80,7 +94,8 @@ export default {
     ...mapState({
       isReadonly: state => state.isReadonly,
       isDark: state => state.localConfig.isDark,
-      autoSaveTime: state => state.localConfig.autoSaveTime
+      autoSaveTime: state => state.localConfig.autoSaveTime,
+      isMobile: state => state.isMobile
     })
   },
   mounted() {
@@ -122,6 +137,7 @@ export default {
     // 思维导图数据转换为树结构
     mindMapDataToTree(rootData, callback = () => {}) {
       this.currentData = null
+      this.currentNode = null
       this.treeData = []
       this.$nextTick(() => {
         rootData.root = true // 标记根节点
@@ -157,8 +173,9 @@ export default {
     },
 
     // 当前选中的树节点变化事件
-    onCurrentChange(data) {
+    onCurrentChange(data, node) {
       this.currentData = data
+      this.currentNode = node
     },
 
     // 失去焦点更新节点文本
@@ -234,6 +251,7 @@ export default {
         e.stopPropagation()
         this.$refs.tree.remove(this.currentData)
         this.currentData = null
+        this.currentNode = null
         this.autoSave()
       }
     },
@@ -340,6 +358,44 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+
+    insertNode() {
+      this.onNodeInputKeydown(
+        {
+          keyCode: 13,
+          preventDefault: () => {}
+        },
+        this.currentNode
+      )
+    },
+
+    insertChildNode() {
+      this.onNodeInputKeydown(
+        {
+          keyCode: 9,
+          preventDefault: () => {}
+        },
+        this.currentNode
+      )
+    },
+
+    upLevel() {
+      this.onNodeInputKeydown(
+        {
+          keyCode: 9,
+          shiftKey: true,
+          preventDefault: () => {}
+        },
+        this.currentNode
+      )
+    },
+
+    deleteNode() {
+      this.onKeyDown({
+        keyCode: 46,
+        stopPropagation: () => {}
+      })
     }
   }
 }
@@ -361,6 +417,44 @@ export default {
 
     .tip {
       color: var(--text-normal);
+    }
+
+    .mobileActions {
+      .iconBtn {
+        color: hsla(0, 0%, 100%, 0.9);
+        border: 1px solid #666;
+      }
+    }
+  }
+
+  .mobileActions {
+    position: absolute;
+    left: 12px;
+    top: 0;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .iconBtn {
+      display: flex;
+      cursor: pointer;
+      margin-right: 10px;
+      height: 24px;
+      width: 40px;
+      border-radius: 4px;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      color: rgba(26, 26, 26, 0.8);
+      border: 1px solid #eee;
+      border-radius: 4px;
     }
   }
 

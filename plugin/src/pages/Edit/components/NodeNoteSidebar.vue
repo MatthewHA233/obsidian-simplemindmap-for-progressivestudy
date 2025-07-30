@@ -9,8 +9,10 @@ import Sidebar from './Sidebar.vue'
 import { mapState, mapMutations } from 'vuex'
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer'
 import { toastUiEditorLangMap } from '@/config/constant'
+import noteMixin from '@/mixins/note'
 
 export default {
+  mixins: [noteMixin],
   components: {
     Sidebar
   },
@@ -84,6 +86,9 @@ export default {
       this.$nextTick(() => {
         this.initEditor()
         this.editor.setMarkdown(node.getData('note'))
+        this.fixNoteImg(
+          Array.from(this.$refs.noteContentWrap.querySelectorAll('img'))
+        )
       })
     }
   }

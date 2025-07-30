@@ -7,6 +7,7 @@
     :width="'90%'"
     :top="isMobile ? '20px' : '15vh'"
     :modal-append-to-body="false"
+    :close-on-click-modal="false"
   >
     <div class="tip">{{ $t('nodeImage.tip') }}</div>
     <div class="title">1.{{ $t('nodeImage.selectLocal') }}</div>
@@ -76,7 +77,7 @@
 
 <script>
 import ImgUpload from '@/components/ImgUpload/index.vue'
-import { getImageSize, isMobile } from 'simple-mind-map/src/utils/index'
+import { getImageSize } from 'simple-mind-map/src/utils/index'
 import { mapState } from 'vuex'
 import { isNormalUrl } from '@/utils'
 
@@ -92,7 +93,6 @@ export default {
       imgUrl: '',
       imgTitle: '',
       activeNodes: null,
-      isMobile: isMobile(),
       obFileList: [],
       obFile: '',
       allObFileList: null
@@ -100,7 +100,8 @@ export default {
   },
   computed: {
     ...mapState({
-      isDark: state => state.localConfig.isDark
+      isDark: state => state.localConfig.isDark,
+      isMobile: state => state.isMobile
     })
   },
   created() {

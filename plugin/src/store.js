@@ -9,8 +9,6 @@ const createStore = () => {
       localConfig: {
         // 本地配置
         isZenMode: false, // 是否是禅模式
-        // 是否开启节点富文本
-        openNodeRichText: true,
         // 鼠标行为
         useLeftKeySelectionRightKeyDrag: false,
         // 是否显示滚动条
@@ -25,7 +23,9 @@ const createStore = () => {
       activeSidebar: '', // 当前显示的侧边栏
       isOutlineEdit: false, // 是否是大纲编辑模式
       isReadonly: false, // 是否只读
-      extraTextOnExport: '' // 导出时底部添加的文字
+      extraTextOnExport: '', // 导出时底部添加的文字
+      // 是否是移动端
+      isMobile: false
     },
     mutations: {
       // 设置本地配置
@@ -53,6 +53,11 @@ const createStore = () => {
       // 设置导出时底部添加的文字
       setExtraTextOnExport(state, data) {
         state.extraTextOnExport = data
+      },
+
+      // 设置是否是移动端
+      setIsMobile(state, data) {
+        state.isMobile = data
       }
     },
     actions: {}

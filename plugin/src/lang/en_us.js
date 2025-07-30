@@ -217,7 +217,8 @@ export default {
     mdImportDialogTitle: 'Paste Markdown content to import',
     mdPlaceholder: 'Please enter the content in Markdown format',
     mdEmptyTip: 'The content cannot be empty',
-    mdImportFailTip: 'Import failed, no content was parsed for import. Only supports syntax such as titles and lists'
+    mdImportFailTip: 'Import failed, no content was parsed for import. Only supports syntax such as titles and lists',
+    rootNodeName: 'Root node'
   },
   navigatorToolbar: {
     openMiniMap: 'Open mini map',
@@ -253,7 +254,8 @@ export default {
     tip1: 'Please enter the link address',
     tip2: 'Insertion failed, file does not exist',
     tip3: 'Please select a local file',
-    tip4: 'File upload to Vault failed'
+    tip4: 'File upload to Vault failed',
+    tip5: 'Insertion failed'
   },
   nodeIcon: {
     title: 'Icon'

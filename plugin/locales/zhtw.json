@@ -20,7 +20,9 @@
     "previewAsMindMap": "預覽為心智圖",
     "changeToReadonly": "切換為只讀模式",
     "changeToEdit": "切換為編輯模式",
-    "enterDemonstrate": "進入心智圖演示模式"
+    "enterDemonstrate": "進入心智圖演示模式",
+    "changeToMdFile": "轉換為Markdown檔案",
+    "changeToMindMapFile": "轉換為心智圖檔案"
   },
   "tip": {
     "fileExist": "檔案已經存在",
@@ -35,9 +37,21 @@
     "insertFail": "插入失敗",
     "noMatchResult": "暫無匹配結果",
     "fileDeleted": "該檔案已被删除",
-    "noPreviewImageInFile": "該檔案中沒有可預覽圖片"
+    "noPreviewImageInFile": "該檔案中沒有可預覽圖片",
+    "pluginNewVersion": "挿件有新版本可用：",
+    "pluginNoNewVersion": "當前已是最新版本",
+    "pluginVersionCheckError": "檢查失敗",
+    "changeSuccess": "轉換完成",
+    "mdToMindMapFail": "轉換失敗，沒有解析到可以轉換為心智圖的數據"
   },
   "setting": {
+    "title": {
+      "title1": "基礎",
+      "title2": "文件",
+      "title3": "圖片壓縮",
+      "title4": "嵌入",
+      "title5": "其他"
+    },
     "themeMode": {
       "title": "主題模式",
       "desc": "深色、淺色模式",
@@ -73,10 +87,14 @@
       "option1": "倉庫的根目錄",
       "option2": "指定文件夾",
       "option3": "當前文件所在的文件夾",
-      "option4": "當前文件所在文件夾下指定的子文件夾"
+      "option4": "當前文件所在文件夾下指定的子文件夾",
+      "title8": "支持ob蒐索",
+      "desc8": "心智圖數據是編碼壓縮後存儲的，所以無法在ob中蒐索，如果你想在ob中能蒐索到心智圖的節點文字內容，可以開啟該選項，開啟後會在檔案中額外保存所有節點的文字內容用於蒐索，帶來的副作用是會導致檔案體積變大，可能會影響檔案打開和保存的速度",
+      "title9": "存儲畫布位置和縮放數據",
+      "desc9": "開啟後會在檔案中保存畫布位置和縮放數據，這樣下次打開時能恢復到上次關閉時的位置和縮放狀態。缺點是只要移動和縮放過畫布就會造成檔案改動"
     },
     "compress": {
-      "title1": "是否壓縮圖片",
+      "title1": "壓縮圖片",
       "desc1": "是否壓縮上傳的節點圖片（從本地選擇的圖片）",
       "title2": "最大壓縮寬度",
       "desc2": "設定圖片壓縮後的最大寬度",
@@ -114,6 +132,10 @@
     },
     "button": {
       "select": "選擇"
+    },
+    "other": {
+      "title1": "檢查新版本",
+      "desc1": "開啟後會在挿件啟動時檢查是否有新版本可用，如果你的網絡訪問不到Github，則建議關閉該選項"
     }
   }
 }

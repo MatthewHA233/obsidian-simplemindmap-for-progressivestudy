@@ -28,26 +28,28 @@
 import Editor from '@toast-ui/editor'
 import '@toast-ui/editor/dist/i18n/zh-cn'
 import '@toast-ui/editor/dist/i18n/zh-TW'
-import { isMobile } from 'simple-mind-map/src/utils/index'
 import { mapState } from 'vuex'
 import { toastUiEditorLangMap } from '@/config/constant'
+import { compressImage, isNormalUrl } from '@/utils'
+import noteMixin from '@/mixins/note'
 
 // 节点备注内容设置
 export default {
   name: 'NodeNote',
+  mixins: [noteMixin],
   data() {
     return {
       dialogVisible: false,
       note: '',
       activeNodes: [],
       editor: null,
-      isMobile: isMobile(),
       appointNode: null
     }
   },
   computed: {
     ...mapState({
-      isDark: state => state.localConfig.isDark
+      isDark: state => state.localConfig.isDark,
+      isMobile: state => state.isMobile
     })
   },
   watch: {
@@ -101,7 +103,66 @@ export default {
           previewStyle: 'vertical',
           theme: this.isDark ? 'dark' : 'light',
           language:
-            toastUiEditorLangMap[this.$i18n.locale] || toastUiEditorLangMap.en
+            toastUiEditorLangMap[this.$i18n.locale] || toastUiEditorLangMap.en,
+          customHTMLRenderer: {
+            // 拦截图片渲染逻辑
+            image: (node, { entering }) => {
+              if (!entering) return null
+              let url = node.destination || node.src
+              // 自定义转换逻辑（例如添加前缀、替换域名）
+              if (!isNormalUrl(url)) {
+                url = this.$root.$obsidianAPI.getResourcePath(
+                  decodeURIComponent(url)
+                )
+              }
+              return {
+                type: 'html',
+                content: `<img data-url="${url}" />`
+              }
+            }
+          },
+          events: {
+            change: () => {
+              this.$nextTick(() => {
+                const imgs = document.querySelectorAll(
+                  '.toastui-editor-md-preview img'
+                )
+                const img2 = document.querySelectorAll(
+                  '.toastui-editor-ww-container img'
+                )
+                this.fixNoteImg([...Array.from(imgs), ...Array.from(img2)])
+              })
+            }
+          },
+          hooks: {
+            addImageBlobHook: async (file, callback) => {
+              try {
+                const {
+                  compressImage: isCompress,
+                  compressImageOptionsMaxWidth,
+                  compressImageOptionsMaxHeight,
+                  compressImageOptionsQuality
+                } = this.$root.$obsidianAPI.getSettings()
+                if (isCompress) {
+                  file = await compressImage(file, {
+                    exportType: 'file',
+                    maxWidth: compressImageOptionsMaxWidth,
+                    maxHeight: compressImageOptionsMaxHeight,
+                    quality: compressImageOptionsQuality
+                  })
+                }
+                const result = await this.$root.$obsidianAPI.saveFileToVault(
+                  file
+                )
+                if (!result) {
+                  throw new Error(this.$t('imageUpload.failTip'))
+                }
+                callback(result)
+              } catch (error) {
+                console.error('上传失败', error)
+              }
+            }
+          }
         })
       }
       this.editor.setMarkdown(this.note)

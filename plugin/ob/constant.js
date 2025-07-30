@@ -27,7 +27,7 @@ export const getDefaultSmmData = (options = {}) => {
 }
 
 export const DEFAULT_SETTINGS = {
-  isFirstUse: true,// 是否是第一次使用插件
+  isFirstUse: true, // 是否是第一次使用插件
   fileNamePrefix: 'MindMap', // 新建思维导图的文件名前缀
   fileNameDateFormat: 'YYYY-MM-DD HH.mm.ss', // 新建思维导图的文件名日期时间戳格式
   lang: 'zh', // 语言
@@ -53,7 +53,10 @@ export const DEFAULT_SETTINGS = {
   autoSaveTime: 5, // 无操作自动保存时间，单位s
   mindMapConfig: null,
   mindMapLocalConfig: null,
-  codeBlockInitHeight: 300 // smm代码块方式嵌入时初始高度，单位：px
+  codeBlockInitHeight: 300, // smm代码块方式嵌入时初始高度，单位：px
+  supportObSearch: false, // 是否支持ob搜索
+  openVersionCheck: true, // 是否开启版本检查
+  saveCanvasViewData: true // 是否存储画布位置和缩放数据
 }
 
 export const IGNORE_CHECK_SMM = 'ignoreCheckSmm'

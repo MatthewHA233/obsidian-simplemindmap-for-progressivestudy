@@ -1,5 +1,5 @@
 <template>
-  <div class="scaleContainer" :class="{ isDark: isDark }">
+  <div class="scaleContainer" :class="{ isDark: isDark, isMobile: isMobile }">
     <div
       class="btn el-icon-minus"
       @click="narrow"
@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 // 放大缩小
 export default {
   props: {
@@ -43,6 +45,11 @@ export default {
       scaleNum: 100,
       cacheScaleNum: 0
     }
+  },
+  computed: {
+    ...mapState({
+      isMobile: state => state.isMobile
+    })
   },
   watch: {
     mindMap(val, oldVal) {
@@ -111,6 +118,15 @@ export default {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
+  &.isMobile {
+    flex-direction: column;
+
+    .scaleInfo {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
 
   &.isDark {
     .btn {

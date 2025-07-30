@@ -39,21 +39,17 @@ export default class Commands {
       return
     }
 
-    console.log('快捷键覆盖')
-
     const scope = this.app.keymap.getRootScope()
 
     // 1. 覆盖 Ctrl+F
     const ctrlFHandler = scope.register(['Mod'], 'f', evt => {
       evt.preventDefault() // 阻止浏览器默认查找
-      console.log('思维导图搜索')
       return true // 表示已处理
     })
 
     // 2. 覆盖 Ctrl+S
     const ctrlSHandler = scope.register(['Mod'], 's', evt => {
       evt.preventDefault() // 阻止浏览器保存对话框
-      console.log('思维导图保存')
       const view = this._getActiveSmmView()
       if (view) {
         view.forceSave()
@@ -67,7 +63,6 @@ export default class Commands {
 
     // 设置清理函数
     this.popScope = () => {
-      console.log('解除快捷键覆盖')
       scope.unregister(ctrlFHandler)
       scope.unregister(ctrlSHandler)
     }

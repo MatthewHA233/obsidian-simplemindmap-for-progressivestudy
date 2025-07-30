@@ -2,9 +2,12 @@
   <div
     ref="navigatorContainerRef"
     class="navigatorContainer smmCustomScrollbar"
-    :class="{ isDark: isDark }"
-    :style="{ maxWidth: maxWidth }"
+    :class="{ isDark: isDark, isMobile: isMobile }"
+    :style="{ maxWidth: !isMobile ? maxWidth : '42px' }"
   >
+    <div class="item" v-if="isMobile" @click="showContextMenu">
+      <div class="btn iconfont iconcaidan"></div>
+    </div>
     <div
       class="item"
       :aria-label="$t('navigatorToolbar.backToRoot')"
@@ -19,7 +22,7 @@
     >
       <div class="btn iconfont iconsousuo" @click="showSearch"></div>
     </div>
-    <div class="item">
+    <div class="item" v-if="!isMobile">
       <MouseAction :isDark="isDark" :mindMap="mindMap"></MouseAction>
     </div>
     <div
@@ -52,7 +55,7 @@
         @click="toggleDark"
       ></div>
     </div>
-    <div class="item">
+    <div class="item" v-if="!isMobile">
       <div
         class="btn iconfont iconyanshibofang"
         @click="enterDemoMode"
@@ -111,7 +114,8 @@ export default {
       lang: '',
       openMiniMap: false,
       showDarkChangeBtn: false,
-      maxWidth: 'max-content'
+      maxWidth: 'max-content',
+      activeNode: null
     }
   },
   computed: {
@@ -119,20 +123,31 @@ export default {
       isReadonly: state => state.isReadonly,
       isDark: state => state.localConfig.isDark,
       isZenMode: state => state.localConfig.isZenMode,
-      localConfig: state => state.localConfig
+      localConfig: state => state.localConfig,
+      isMobile: state => state.isMobile
     })
   },
   created() {
     const { lang, themeMode } = this.$root.$obsidianAPI.getSettings()
     this.lang = lang || 'en'
     this.showDarkChangeBtn = themeMode !== 'follow'
-    this.$root.$bus.$on('windowResize', this.onResize)
+    if (!this.isMobile) {
+      this.$root.$bus.$on('windowResize', this.onResize)
+    } else {
+      this.$root.$bus.$on('node_active', this.handleNodeActive)
+    }
   },
   mounted() {
-    this.onResize()
+    if (!this.isMobile) {
+      this.onResize()
+    }
   },
   beforeDestroy() {
-    this.$root.$bus.$off('windowResize', this.onResize)
+    if (!this.isMobile) {
+      this.$root.$bus.$off('windowResize', this.onResize)
+    } else {
+      this.$root.$bus.$off('node_active', this.handleNodeActive)
+    }
   },
   methods: {
     ...mapMutations(['setLocalConfig', 'setActiveSidebar']),
@@ -198,6 +213,28 @@ export default {
       const nRect = this.$refs.navigatorContainerRef.getBoundingClientRect()
       const eRect = el.getBoundingClientRect()
       this.maxWidth = eRect.left - nRect.left + 'px'
+    },
+
+    handleNodeActive(...args) {
+      this.activeNode = args[1].length > 0 ? args[1][0] : null
+    },
+
+    showContextMenu() {
+      if (this.activeNode) {
+        this.$root.$bus.$emit(
+          'show_node_context_menu',
+          {
+            clientX: 0,
+            clientY: 0
+          },
+          this.activeNode
+        )
+      } else {
+        this.$root.$bus.$emit('show_canvas_context_menu', {
+          clientX: 0,
+          clientY: 0
+        })
+      }
     }
   }
 }
@@ -217,6 +254,15 @@ export default {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
+  &.isMobile {
+    padding: 0;
+    flex-direction: column;
+
+    .item {
+      margin-right: 0;
+    }
+  }
 
   &.isDark {
     background: #262a2e;

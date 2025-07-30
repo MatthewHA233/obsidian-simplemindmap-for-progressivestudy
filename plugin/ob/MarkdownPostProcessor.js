@@ -223,13 +223,21 @@ export default class MarkdownPostProcessor {
   }
 
   _updateImgSize(containerEl, img) {
-    const width = containerEl.getAttribute('width')
-    const height = containerEl.getAttribute('height')
-    if (width) {
-      img.width = width
-    }
-    if (height) {
-      img.height = height
+    // 悬浮预览弹窗
+    if (
+      containerEl.parentNode &&
+      containerEl.parentNode.classList.contains('popover')
+    ) {
+      containerEl.classList.add('smm-popover-img-preview-content')
+    } else {
+      const width = containerEl.getAttribute('width')
+      const height = containerEl.getAttribute('height')
+      if (width) {
+        img.width = width
+      }
+      if (height) {
+        img.height = height
+      }
     }
   }
 

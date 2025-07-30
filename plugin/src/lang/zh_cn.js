@@ -211,7 +211,8 @@ export default {
     mdImportDialogTitle: '粘贴Markdown内容导入',
     mdPlaceholder: '请输入Markdown格式的内容',
     mdEmptyTip: '内容不能为空',
-    mdImportFailTip: '导入失败，没有解析到可导入内容。只支持标题、列表等语法'
+    mdImportFailTip: '导入失败，没有解析到可导入内容。只支持标题、列表等语法',
+    rootNodeName: '根节点'
   },
   navigatorToolbar: {
     openMiniMap: '开启小地图',
@@ -247,7 +248,8 @@ export default {
     tip1: '请输入链接地址',
     tip2: '插入失败，文件不存在',
     tip3: '请选择本地文件',
-    tip4: '文件上传到Vault中失败'
+    tip4: '文件上传到Vault中失败',
+    tip5: '插入失败'
   },
   nodeIcon: {
     title: '图标'

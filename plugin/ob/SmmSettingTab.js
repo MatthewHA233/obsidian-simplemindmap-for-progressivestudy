@@ -3,6 +3,7 @@ import themeList from 'simple-mind-map-plugin-themes/themeList'
 import { layoutGroupList } from '../src/config'
 import { GITHUB_ICON, DEFAULT_SETTINGS, COMMUNITY_ICON } from './constant'
 import { SuggestionModal } from './SuggestionModal'
+import { checkVersion } from './utils'
 
 const validateInteger = (value, defaultValue = 0, errorTip) => {
   value = Number(value)
@@ -41,6 +42,8 @@ export default class SmmSettingTab extends PluginSettingTab {
 
     this._addEmbedSetting()
 
+    this._addOtherSetting()
+
     this._addHelpInfo()
   }
 
@@ -48,7 +51,7 @@ export default class SmmSettingTab extends PluginSettingTab {
   _addBaseSetting() {
     const { containerEl } = this
 
-    containerEl.createEl('h2', { text: '基础' })
+    containerEl.createEl('h2', { text: this.plugin._t('setting.title.title1') })
 
     // 自动保存时间设置
     new Setting(containerEl)
@@ -172,7 +175,7 @@ export default class SmmSettingTab extends PluginSettingTab {
   _addFileSaveSetting() {
     const { containerEl } = this
 
-    containerEl.createEl('h2', { text: '文件' })
+    containerEl.createEl('h2', { text: this.plugin._t('setting.title.title2') })
 
     // 新建文件名的前缀
     new Setting(containerEl)
@@ -337,13 +340,39 @@ export default class SmmSettingTab extends PluginSettingTab {
     this.attachmentSubPathSettings.settingEl.className +=
       ' smm-setting-sub-item'
     this._updateAttachmentPathSettingsVisibility()
+
+    // 是否支持ob搜索
+    new Setting(containerEl)
+      .setName(this.plugin._t('setting.folder.title8'))
+      .setDesc(this.plugin._t('setting.folder.desc8'))
+      .addToggle(toggle => {
+        toggle
+          .setValue(this.plugin.settings.supportObSearch)
+          .onChange(async value => {
+            this.plugin.settings.supportObSearch = value
+            await this.plugin._saveSettings()
+          })
+      })
+
+    // 是否存储画布位置和缩放数据
+    new Setting(containerEl)
+      .setName(this.plugin._t('setting.folder.title9'))
+      .setDesc(this.plugin._t('setting.folder.desc9'))
+      .addToggle(toggle => {
+        toggle
+          .setValue(this.plugin.settings.saveCanvasViewData)
+          .onChange(async value => {
+            this.plugin.settings.saveCanvasViewData = value
+            await this.plugin._saveSettings()
+          })
+      })
   }
 
   // 图片压缩设置
   _addCompressSetting() {
     const { containerEl } = this
 
-    containerEl.createEl('h2', { text: '图片压缩' })
+    containerEl.createEl('h2', { text: this.plugin._t('setting.title.title3') })
 
     // 是否压缩图片设置
     new Setting(containerEl)
@@ -424,8 +453,8 @@ export default class SmmSettingTab extends PluginSettingTab {
           .onClick(async () => {
             const defaultValue = DEFAULT_SETTINGS.compressImageOptionsQuality
             this.plugin.settings.compressImageOptionsQuality = defaultValue
-            const sliderEl =
-              this.compressImageOptionsQualitySettings?.components[0]
+            const sliderEl = this.compressImageOptionsQualitySettings
+              ?.components[0]
             if (sliderEl) {
               sliderEl.setValue(defaultValue)
               this.plugin.settings.compressImageOptionsQuality = defaultValue
@@ -447,7 +476,7 @@ export default class SmmSettingTab extends PluginSettingTab {
   _addEmbedSetting() {
     const { containerEl } = this
 
-    containerEl.createEl('h2', { text: '嵌入' })
+    containerEl.createEl('h2', { text: this.plugin._t('setting.title.title4') })
 
     // 嵌入预览的图像背景是否透明
     new Setting(containerEl)
@@ -566,17 +595,56 @@ export default class SmmSettingTab extends PluginSettingTab {
   _updateCompressImageSettingsVisibility() {
     const isVisible = this.plugin.settings.compressImage
     if (this.compressImageOptionsMaxWidthSettings) {
-      this.compressImageOptionsMaxWidthSettings.settingEl.style.display =
-        isVisible ? '' : 'none'
+      this.compressImageOptionsMaxWidthSettings.settingEl.style.display = isVisible
+        ? ''
+        : 'none'
     }
     if (this.compressImageOptionsMaxHeightSettings) {
-      this.compressImageOptionsMaxHeightSettings.settingEl.style.display =
-        isVisible ? '' : 'none'
+      this.compressImageOptionsMaxHeightSettings.settingEl.style.display = isVisible
+        ? ''
+        : 'none'
     }
     if (this.compressImageOptionsQualitySettings) {
-      this.compressImageOptionsQualitySettings.settingEl.style.display =
-        isVisible ? '' : 'none'
+      this.compressImageOptionsQualitySettings.settingEl.style.display = isVisible
+        ? ''
+        : 'none'
     }
+  }
+
+  _addOtherSetting() {
+    const { containerEl } = this
+
+    containerEl.createEl('h2', { text: this.plugin._t('setting.title.title5') })
+
+    // 是否开启版本检查
+    new Setting(containerEl)
+      .setName(this.plugin._t('setting.other.title1')) // 是否开启版本检查
+      .setDesc(this.plugin._t('setting.other.desc1')) // 是否开启版本检查
+      .addToggle(toggle => {
+        toggle
+          .setValue(this.plugin.settings.openVersionCheck)
+          .onChange(async value => {
+            this.plugin.settings.openVersionCheck = value
+            await this.plugin._saveSettings()
+          })
+      })
+      .addExtraButton(button => {
+        button.setIcon('refresh-cw').onClick(async () => {
+          checkVersion(
+            version => {
+              if (version) {
+                new Notice(this.plugin._t('tip.pluginNewVersion') + version)
+              } else {
+                new Notice(this.plugin._t('tip.pluginNoNewVersion'))
+              }
+            },
+            true,
+            () => {
+              new Notice(this.plugin._t('tip.pluginVersionCheckError'))
+            }
+          )
+        })
+      })
   }
 
   // 添加辅助信息

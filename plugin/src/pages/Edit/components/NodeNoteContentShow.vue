@@ -22,9 +22,11 @@
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer'
 import { mapState } from 'vuex'
 import { toastUiEditorLangMap } from '@/config/constant'
+import noteMixin from '@/mixins/note'
 
 // 节点备注内容显示
 export default {
+  mixins: [noteMixin],
   props: {
     mindMap: {
       type: Object,
@@ -86,6 +88,9 @@ export default {
         this.node = node
         this.editor.setMarkdown(content)
         this.handleALink()
+        this.fixNoteImg(
+          Array.from(this.$refs.noteContentViewer.querySelectorAll('img'))
+        )
         this.show = true
         this.$nextTick(() => {
           this.updateNoteContentPosition(left, top, width, height)

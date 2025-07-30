@@ -1,4 +1,4 @@
-import { Notice, TextFileView, TFile, setIcon } from 'obsidian'
+import { Notice, TextFileView, TFile, setIcon, Platform } from 'obsidian'
 import {
   SMM_VIEW_TYPE,
   SAVE_ICON,
@@ -15,7 +15,7 @@ import {
   parseMarkdownText,
   createDefaultText
 } from './ob/metadataAndMarkdown.js'
-import { hideTargetMenu } from './ob/utils.js'
+import { hideTargetMenu, checkVersion } from './ob/utils.js'
 import LZString from 'lz-string'
 
 // 自定义视图类
@@ -121,6 +121,15 @@ class SmmEditView extends TextFileView {
 
     // 监听主题模式改变
     this._initThemeMode()
+
+    // 检查更新
+    if (this.plugin.settings.openVersionCheck) {
+      checkVersion(version => {
+        if (version) {
+          new Notice(this.plugin._t('tip.pluginNewVersion') + version)
+        }
+      })
+    }
   }
 
   // 获取视图数据（保存到文件）
@@ -141,22 +150,19 @@ class SmmEditView extends TextFileView {
       // 空文件处理
       if (!rawData) {
         // 文件内容为空
-        console.warn('文件内容为空')
         throw new Error(this.plugin._t('tip.fileIsEmpty'))
       } else {
         this.parsedMindMapData = parseMarkdownText(rawData)
         const content = this.parsedMindMapData.metadata.content
         if (content) {
-          this.parsedMindMapData.metadata.content =
-            LZString.decompressFromBase64(content)
-          console.warn('文件数据正常')
+          this.parsedMindMapData.metadata.content = LZString.decompressFromBase64(
+            content
+          )
         } else {
-          console.warn('文件格式错误')
           throw new Error('文件格式错误')
         }
       }
     } catch (error) {
-      console.error('数据解析失败，使用默认思维导图数据', error)
       rawData = createDefaultText(
         '',
         this.plugin._getCreateDefaultMindMapOptions()
@@ -234,16 +240,19 @@ class SmmEditView extends TextFileView {
         return initLocationNodeId
       },
       // 从思维导图获取最新数据
-      getMindMapCurrentData: (content, linkData) => {
+      getMindMapCurrentData: (content, linkData, textData) => {
         this.parsedMindMapData.metadata.content = content
+        const { metadata, svgdata, linkdata } = this.parsedMindMapData
         this.mindMapData = assembleMarkdownText({
           metadata: {
             path: `${filePath}`,
-            tags: [SMM_TAG],
-            content: LZString.compressToBase64(content)
+            tags: Array.from(new Set([SMM_TAG, ...metadata.tags])),
+            content: LZString.compressToBase64(content),
+            yaml: metadata.yaml
           },
-          svgdata: this.parsedMindMapData.svgdata,
-          linkdata: linkData || this.parsedMindMapData.linkdata || []
+          svgdata,
+          linkdata: linkData || linkdata || [],
+          textdata: textData || []
         })
       },
       // 思维导图中触发保存
@@ -388,7 +397,6 @@ class SmmEditView extends TextFileView {
           await this.app.vault.createBinary(vaultPath, arrayBuffer)
           return vaultPath
         } catch (error) {
-          console.error('保存文件失败:', error)
           return null
         }
       },
@@ -416,13 +424,28 @@ class SmmEditView extends TextFileView {
           new Notice(this.plugin._t('tip.onlyEnableSelectCurrentVaultFile'))
           return null
         }
-        return this.app.vault.getAbstractFileByPath(filePath)
+        let res = this.app.vault.getAbstractFileByPath(filePath)
+        if (!res) {
+          res = this.app.vault.getAbstractFileByPath(filePath + '.md')
+        }
+        return res
+      },
+      isMobile: () => {
+        return Platform.isMobile
       }
     })
 
     setTimeout(() => {
       this._listenMindMapEvent()
     }, 100)
+  }
+
+  // 根据uid定位到指定节点
+  jumpToNodeByUid(uid) {
+    if (!this.mindMapAPP) {
+      return
+    }
+    this.mindMapAPP.$bus.$emit('jumpToNodeByUid', uid)
   }
 
   // 重写保存钩子（最直接的方式）
@@ -437,7 +460,6 @@ class SmmEditView extends TextFileView {
       this.mindMapAPP.$bus.$emit('clearAutoSave')
     }
     if (!this.mindMapData) {
-      console.warn('数据为空，停止保存')
       return
     }
     await super.save()
@@ -690,14 +712,16 @@ class SmmEditView extends TextFileView {
     )
 
     // 导出
-    this.exportButton = this._createActionBtn(
-      this.plugin._t('action.export'),
-      EXPORT_ICON,
-      viewActions,
-      () => {
-        this.mindMapAPP.$bus.$emit('showExport')
-      }
-    )
+    if (!Platform.isMobile) {
+      this.exportButton = this._createActionBtn(
+        this.plugin._t('action.export'),
+        EXPORT_ICON,
+        viewActions,
+        () => {
+          this.mindMapAPP.$bus.$emit('showExport')
+        }
+      )
+    }
 
     // 保存并更新图像数据
     this.saveButton = this._createActionBtn(
@@ -758,12 +782,14 @@ class SmmEditView extends TextFileView {
 
   _showButtons(list) {
     list.forEach(el => {
+      if (!el) return
       el.style.display = 'flex'
     })
   }
 
   _hideButtons(list) {
     list.forEach(el => {
+      if (!el) return
       el.style.display = 'none'
     })
   }

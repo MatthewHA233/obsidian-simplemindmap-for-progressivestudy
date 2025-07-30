@@ -117,7 +117,6 @@
 </template>
 
 <script>
-import { isMobile } from 'simple-mind-map/src/utils/index'
 import { mapState } from 'vuex'
 import { isHyperlink, isObLinkText } from '@/utils'
 
@@ -130,7 +129,6 @@ export default {
       linkTitle: '',
       activeNodes: [],
       protocol: 'https',
-      isMobile: isMobile(),
       activeType: 'hyperlink',
       fileList: [],
       allFileList: null,
@@ -142,7 +140,8 @@ export default {
   },
   computed: {
     ...mapState({
-      isDark: state => state.localConfig.isDark
+      isDark: state => state.localConfig.isDark,
+      isMobile: state => state.isMobile
     })
   },
   watch: {

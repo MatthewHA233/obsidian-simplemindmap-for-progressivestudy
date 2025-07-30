@@ -224,7 +224,11 @@ export default {
       fileReader.readAsText(file.raw)
       fileReader.onload = async evt => {
         try {
-          let data = markdown.transformMarkdownTo(evt.target.result)
+          let data = await markdown.transformMarkdownTo(
+            evt.target.result,
+            false,
+            file.raw.name
+          )
           if (!data) {
             this.$root.$obsidianAPI.showTip(this.$t('import.mdImportFailTip'))
             this.$root.$bus.$emit('hideLoading')

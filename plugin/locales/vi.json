@@ -20,7 +20,9 @@
     "previewAsMindMap": "Xem trước dưới dạng sơ đồ tư duy",
     "changeToReadonly": "Chuyển sang chế độ xem",
     "changeToEdit": "Chuyển sang chế độ chỉnh sửa",
-    "enterDemonstrate": "Vào chế độ trình diễn sơ đồ tư duy"
+    "enterDemonstrate": "Vào chế độ trình diễn sơ đồ tư duy",
+    "changeToMdFile": "Chuyển đổi sang tài liệu Markdown",
+    "changeToMindMapFile": "Chuyển đổi sang tài liệu bản đồ tư duy"
   },
   "tip": {
     "fileExist": "Tệp đã tồn tại",
@@ -35,9 +37,21 @@
     "insertFail": "Chèn thất bại",
     "noMatchResult": "Không có kết quả phù hợp",
     "fileDeleted": "Tệp đã bị xóa",
-    "noPreviewImageInFile": "Không có hình ảnh xem trước trong tệp"
+    "noPreviewImageInFile": "Không có hình ảnh xem trước trong tệp",
+    "pluginNewVersion": "Plugin có phiên bản mới:",
+    "pluginNoNewVersion": "Hiện tại là phiên bản mới nhất",
+    "pluginVersionCheckError": "Kiểm tra thất bại",
+    "changeSuccess": "Hoàn thành chuyển đổi",
+    "mdToMindMapFail": "Chuyển đổi thất bại, không có dữ liệu được phân tích để có thể được chuyển đổi thành Bản đồ tư duy"
   },
   "setting": {
+    "title": {
+      "title1": "Cơ bản",
+      "title2": "Tệp",
+      "title3": "Nén hình ảnh",
+      "title4": "Hình ảnh",
+      "title5": "Khác"
+    },
     "themeMode": {
       "title": "Chế độ chủ đề",
       "desc": "Chế độ tối, ánh sáng",
@@ -73,7 +87,11 @@
       "option1": "Thư mục gốc của kho lưu trữ",
       "option2": "Thư mục chỉ định",
       "option3": "Thư mục chứa tệp hiện tại",
-      "option4": "Thư mục con được chỉ định trong thư mục chứa tệp hiện tại"
+      "option4": "Thư mục con được chỉ định trong thư mục chứa tệp hiện tại",
+      "title8": "Hỗ trợ tìm kiếm OB",
+      "desc8": "Tư duy bản đồ dữ liệu là mã hóa nén sau khi lưu trữ, vì vậy không thể tìm kiếm trong ob, nếu bạn muốn trong ob có thể tìm kiếm nội dung văn bản nút của bản đồ tư duy, bạn có thể mở tùy chọn này, sau khi mở sẽ lưu thêm tất cả các nút trong các tập tin nội dung văn bản để tìm kiếm, mang lại tác dụng phụ sẽ dẫn đến khối lượng tập tin lớn hơn, có thể ảnh hưởng đến tốc độ mở và lưu tập tin",
+      "title9": "Lưu trữ vị trí canvas và dữ liệu thu phóng",
+      "desc9": "Vị trí khung và dữ liệu thu phóng được lưu trong tệp sau khi mở để bạn có thể khôi phục lại vị trí và trạng thái thu phóng của lần đóng cuối cùng khi mở tiếp theo. Nhược điểm là chỉ cần di chuyển và phóng to canvas sẽ làm thay đổi tập tin."
     },
     "compress": {
       "title1": "Có nén ảnh không",
@@ -114,6 +132,10 @@
     },
     "button": {
       "select": "Chọn"
+    },
+    "other": {
+      "title1": "Kiểm tra phiên bản mới",
+      "desc1": "Khi plugin khởi động, bạn sẽ kiểm tra xem có phiên bản mới không và nếu mạng của bạn không truy cập được Github, bạn nên tắt tùy chọn này."
     }
   }
 }

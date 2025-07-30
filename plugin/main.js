@@ -1,7 +1,6 @@
 import {
   addIcon,
   Plugin,
-  TFile,
   TFolder,
   Notice,
   MarkdownView,
@@ -18,13 +17,12 @@ import {
   DEFAULT_SETTINGS,
   IGNORE_CHECK_SMM
 } from './ob/constant.js'
-import dayjs from 'dayjs'
 import {
   createDefaultText,
   createDefaultMindMapData
 } from './ob/metadataAndMarkdown.js'
 import { around, dedupe } from 'monkey-around'
-import { hideTargetMenu } from './ob/utils.js'
+import { getUidFromSource } from './ob/utils.js'
 import MarkdownPostProcessor from './ob/MarkdownPostProcessor.js'
 import SmmSettingTab from './ob/SmmSettingTab.js'
 import { langList } from './src/config/zh'
@@ -33,8 +31,9 @@ import enTranslations from './locales/en.json'
 import zhTranslations from './locales/zh.json'
 import viTranslations from './locales/vi.json'
 import zhtwTranslations from './locales/zhtw.json'
-import { PreviewMindMap } from './ob/PreviewMindMap.js'
 import Commands from './ob/Commands.js'
+import markdown from 'simple-mind-map/src/parse/markdown.js'
+import Menus from './ob/Menus.js'
 
 export default class SimpleMindMapPlugin extends Plugin {
   async onload() {
@@ -71,7 +70,7 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.commands = new Commands(this)
 
     // 添加右键菜单
-    this._addFileMenus()
+    this.menus = new Menus(this)
 
     // 打补丁，拦截默认的打开方法
     this._registerMonkeyPatches()
@@ -103,7 +102,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       const { vault } = this.app
       const filePath = `${
         folderPath ? folderPath + '/' : ''
-      }${fileNamePrefix} ${dayjs().format(fileNameDateFormat)}.smm.md`
+      }${fileNamePrefix} ${moment().format(fileNameDateFormat)}.smm.md`
       const fileContent = createDefaultText(
         filePath,
         this._getCreateDefaultMindMapOptions()
@@ -151,50 +150,20 @@ export default class SimpleMindMapPlugin extends Plugin {
     }
   }
 
-  // 添加右键菜单
-  _addFileMenus() {
-    this.registerEvent(
-      this.app.workspace.on('file-menu', (menu, file) => {
-        if (file instanceof TFolder) {
-          // 新建思维导图
-          menu.addItem(item => {
-            item
-              .setTitle(this._t('action.createMindMap'))
-              .setIcon('smm-icon')
-              .onClick(() => {
-                this._createSmmFile(file.path)
-              })
-          })
-        } else if (file instanceof TFile) {
-          if (this._isSmmFile(file)) {
-            hideTargetMenu(menu, '在新窗口中打开')
-            hideTargetMenu(menu, '移动至新窗口')
-            // 打开为Markdown文档
-            menu.addItem(item =>
-              item
-                .setTitle(this._t('action.openAsMd'))
-                .setIcon('document')
-                .setSection('open')
-                .onClick(async () => {
-                  await this.app.workspace.openLinkText(file.path, '', true)
-                  const leaf = this.app.workspace.getLeaf(false)
-                  const mdViewType =
-                    this.app.viewRegistry.getTypeByExtension('md')
-                  await leaf.setViewState({
-                    type: mdViewType,
-                    state: {
-                      ...leaf.getViewState().state,
-                      isSwitchToMarkdownViewFromSmmView: true
-                    },
-                    active: true
-                  })
-                  this.app.workspace.revealLeaf(leaf)
-                })
-            )
-          }
-        }
-      })
-    )
+  // 处理文件名重复问题
+  async _getAvailableFilaName(filePath, extCount = 1) {
+    let counter = 1
+    while (await this.app.vault.adapter.exists(filePath)) {
+      const parts = filePath.split('.')
+      const extList = []
+      for (let i = 0; i < extCount; i++) {
+        extList.push(parts.pop())
+      }
+      const ext = extList.reverse().join('.')
+      filePath = `${parts.join('.')}_${counter}.${ext}`
+      counter++
+    }
+    return filePath
   }
 
   // 添加设置
@@ -226,7 +195,7 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.register(
       around(Workspace.prototype, {
         getActiveViewOfType(old) {
-          return dedupe(key, old, function (...args) {
+          return dedupe(key, old, function(...args) {
             const result = old && old.apply(this, args)
             if (args[1] === IGNORE_CHECK_SMM) {
               return result
@@ -250,7 +219,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       this.register(
         around(WorkspaceLeaf.prototype, {
           getRoot(old) {
-            return function () {
+            return function() {
               const top = old.call(this)
               return top.getRoot === this.getRoot ? top : top.getRoot()
             }
@@ -263,12 +232,12 @@ export default class SimpleMindMapPlugin extends Plugin {
     this.register(
       around(WorkspaceLeaf.prototype, {
         detach(next) {
-          return function () {
+          return function() {
             return next.apply(this)
           }
         },
         setViewState(next) {
-          return function (state, ...rest) {
+          return function(state, ...rest) {
             // 手动将smm视图切换为md视图不用拦截、md的预览和源码视图也不拦截
             if (
               state.state?.isSwitchToMarkdownViewFromSmmView ||
@@ -281,10 +250,42 @@ export default class SimpleMindMapPlugin extends Plugin {
               state.type === 'markdown' &&
               state.state?.file
             ) {
-              if (self._isSmmFile(state.state.file)) {
-                if (rest && rest[0] && rest[0].subpath) {
-                  self.fileToSubpathMap[state.state.file] = rest[0].subpath
+              const curFilePath = state.state.file
+              if (self._isSmmFile(curFilePath)) {
+                let isStop = false
+                if (rest && rest[0]) {
+                  if (rest[0].subpath) {
+                    self.fileToSubpathMap[curFilePath] = rest[0].subpath
+                  } else if (
+                    rest[0].match &&
+                    rest[0].match.matches.length > 0
+                  ) {
+                    const uid = getUidFromSource(rest[0])
+                    if (uid) {
+                      // 从当前已经打开的视图中查找是否已存在
+                      const existLeaf = this.app.workspace
+                        .getLeavesOfType(SMM_VIEW_TYPE)
+                        .find(leaf => {
+                          const file = leaf.view.file
+                            ? leaf.view.file.path
+                            : leaf.view.state.file
+                          return file && file === curFilePath
+                        })
+                      if (existLeaf) {
+                        if (existLeaf.view.jumpToNodeByUid) {
+                          existLeaf.view.jumpToNodeByUid(uid)
+                        } else {
+                          self.fileToSubpathMap[curFilePath] = uid
+                        }
+                        this.app.workspace.setActiveLeaf(existLeaf)
+                        isStop = true
+                      } else {
+                        self.fileToSubpathMap[curFilePath] = uid
+                      }
+                    }
+                  }
                 }
+                if (isStop) return
                 const newState = {
                   ...state,
                   type: SMM_VIEW_TYPE
@@ -298,49 +299,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       })
     )
     // 在md视图下的smm文件右上角菜单增加切换为思维导图菜单
-    this.register(
-      around(MarkdownView.prototype, {
-        onPaneMenu(next) {
-          return function (menu, source) {
-            const res = next.apply(this, [menu, source])
-            if (self._isSmmFile(this.file)) {
-              if (source === 'more-options') {
-                // 打开为思维导图文档
-                menu.addItem(item =>
-                  item
-                    .setTitle(self._t('action.openAsMindMap'))
-                    .setIcon('document')
-                    .setSection('pane')
-                    .onClick(() => {
-                      self._setSmmView(this.leaf)
-                    })
-                )
-              }
-            } else {
-              if (source === 'more-options') {
-                // 预览为思维导图
-                menu.addItem(item =>
-                  item
-                    .setTitle(self._t('action.previewAsMindMap'))
-                    .setIcon('smm-icon')
-                    .setSection('pane')
-                    .onClick(() => {
-                      let previewMindMap = new PreviewMindMap({
-                        plugin: self,
-                        file: this.file,
-                        onClose: () => {
-                          previewMindMap = null
-                        }
-                      })
-                    })
-                )
-              }
-            }
-            return res
-          }
-        }
-      })
-    )
+    this.menus.addMarkdownFileMenus()
   }
 
   // 切换到思维导图视图
@@ -515,6 +474,30 @@ export default class SimpleMindMapPlugin extends Plugin {
   // 获取ob是否是暗黑模式
   _getObIsDark() {
     return document.body.classList.contains('theme-dark')
+  }
+
+  // md 转思维导图数据
+  async _mdToMindmapData(md) {
+    // 过滤掉开头的 YAML front matter
+    const frontMatterRegex = /^---\n[\s\S]*?\n---\n/
+    const cleanedMd = md.replace(frontMatterRegex, '')
+    if (!cleanedMd.trim()) {
+      return null
+    }
+    // 解析 Markdown 数据
+    const data = await markdown.transformMarkdownTo(cleanedMd, false)
+    if (!data) {
+      return null
+    }
+    const { defaultTheme, defaultThemeDark, defaultLayout } = this.settings
+    return {
+      root: data,
+      layout: defaultLayout,
+      theme: {
+        template: this._getObIsDark() ? defaultThemeDark : defaultTheme,
+        config: {}
+      }
+    }
   }
 
   // 卸载时清理

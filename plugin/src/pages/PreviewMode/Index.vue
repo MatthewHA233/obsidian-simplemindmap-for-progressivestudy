@@ -48,7 +48,6 @@ import Formula from 'simple-mind-map/src/plugins/Formula.js'
 import MindMapLayoutPro from 'simple-mind-map/src/plugins/MindMapLayoutPro.js'
 import NodeBase64ImageStorage from 'simple-mind-map/src/plugins/NodeBase64ImageStorage.js'
 import { mapState, mapMutations } from 'vuex'
-import markdown from 'simple-mind-map/src/parse/markdown.js'
 import darkMixin from '@/mixins/dark'
 import Toolbar from './components/Toolbar.vue'
 
@@ -89,7 +88,6 @@ export default {
     this.initLocalConfig()
   },
   mounted() {
-    console.log('预览模式实例已挂载')
     this.$root.$bus.$on('unmount', this.unmount)
     this.getData()
     if (!this.mindMapData) {
@@ -106,7 +104,6 @@ export default {
     ...mapMutations(['setExtendFontFamilyList', 'setLocalConfig']),
 
     unmount() {
-      console.log('预览模式实例即将销毁')
       this.$root.$bus.$off('unmount', this.unmount)
       if (this.mindMap) {
         this.mindMap.destroy()
@@ -139,24 +136,7 @@ export default {
 
     // 获取思维导图数据
     getData() {
-      const md = this.$root.$obsidianAPI.getInitMindMapData()
-      if (!md) {
-        return
-      }
-      const data = markdown.transformMarkdownTo(md)
-      if (!data) {
-        return
-      }
-      const { defaultTheme, defaultThemeDark, defaultLayout } =
-        this.$root.$obsidianAPI.getSettings()
-      this.mindMapData = {
-        root: data,
-        layout: defaultLayout,
-        theme: {
-          template: this.isDark ? defaultThemeDark : defaultTheme,
-          config: {}
-        }
-      }
+      this.mindMapData = this.$root.$obsidianAPI.getInitMindMapData()
     },
 
     initMindMap() {
@@ -167,6 +147,7 @@ export default {
         const options = this.$root.$obsidianAPI.getMindMapOptions()
         this.mindMap = new MindMap({
           el: this.$refs.smmContainerRef,
+          touchEventBindEl: this.$refs.smmContainerRef,
           data: root,
           layout: layout,
           theme: theme.template,

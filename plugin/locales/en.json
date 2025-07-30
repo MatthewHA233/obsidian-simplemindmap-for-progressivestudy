@@ -20,7 +20,9 @@
     "previewAsMindMap": "Preview as Mind Map",
     "changeToReadonly": "Change to Readonly Mode",
     "changeToEdit": "Change to Edit Mode",
-    "enterDemonstrate": "Enter Mind Map Demonstration Mode"
+    "enterDemonstrate": "Enter Mind Map Demonstration Mode",
+    "changeToMdFile": "Convert to Markdown Document",
+    "changeToMindMapFile": "Convert to Mind Map Document"
   },
   "tip": {
     "fileExist": "File already exists",
@@ -35,9 +37,21 @@
     "insertFail": "Insertion failed",
     "noMatchResult": "No matching results",
     "fileDeleted": "File has been deleted",
-    "noPreviewImageInFile": "No preview image in file"
+    "noPreviewImageInFile": "No preview image in file",
+    "pluginNewVersion": "A new version of the plugin is available:",
+    "pluginNoNewVersion": "The current version is already the latest version",
+    "pluginVersionCheckError": "Check failed",
+    "changeSuccess": "Change completed",
+    "mdToMindMapFail": "Conversion failed, unable to parse data that can be converted into a mind map"
   },
   "setting": {
+    "title": {
+      "title1": "Basic",
+      "title2": "File",
+      "title3": "Image Compression",
+      "title4": "Embed",
+      "title5": "Other"
+    },
     "themeMode": {
       "title": "Theme Mode",
       "desc": "Dark and light color modes",
@@ -73,7 +87,11 @@
       "option1": "Vault root directory",
       "option2": "Specified folder",
       "option3": "Current file's folder",
-      "option4": "Specified subfolder under current file's folder"
+      "option4": "Specified subfolder under current file's folder",
+      "title8": "Support ob search",
+      "desc8": "Mind map data is stored after encoding and compression, so it cannot be searched in OB. If you want to search for the node text content of the mind map in OB, you can turn on this option. After turning it on, the text content of all nodes will be saved in the file for search. The side effect is that it will cause the file size to increase, which may affect the speed of file opening and saving",
+      "title9": "Store canvas position and scaling data",
+      "desc9": "After opening, the canvas position and zoom data will be saved in the file, so that the next time it is opened, it can be restored to the position and zoom state when it was closed last time. The disadvantage is that moving and scaling the canvas will cause file changes"
     },
     "compress": {
       "title1": "Compress Images",
@@ -114,6 +132,10 @@
     },
     "button": {
       "select": "Select"
+    },
+    "other": {
+      "title1": "Check for new versions",
+      "desc1": "After activation, it will check if a new version is available when the plugin starts. If your network cannot access Github, it is recommended to disable this option"
     }
   }
 }

@@ -4,15 +4,19 @@
       class="mindMapContainer"
       id="mindMapContainer"
       ref="mindMapContainer"
+      @dragover.prevent
+      @dragenter="onDragEnter"
+      @drop="onDrop"
     ></div>
     <Navigator v-if="mindMap" :mindMap="mindMap"></Navigator>
     <NavigatorToolbar
       :mindMap="mindMap"
       v-if="!isZenMode && isShowBottomToolbar"
     ></NavigatorToolbar>
-    <OutlineSidebar :mindMap="mindMap"></OutlineSidebar>
+    <OutlineSidebar v-if="mindMap" :mindMap="mindMap"></OutlineSidebar>
     <Style v-if="mindMap && !isZenMode" :mindMap="mindMap"></Style>
     <BaseStyle
+      v-if="mindMap"
       :data="mindMapData"
       :configData="mindMapConfig"
       :mindMap="mindMap"
@@ -22,8 +26,8 @@
       :mindMap="mindMap"
     ></AssociativeLineStyle>
     <Theme v-if="mindMap" :data="mindMapData" :mindMap="mindMap"></Theme>
-    <Structure :mindMap="mindMap"></Structure>
-    <ShortcutKey></ShortcutKey>
+    <Structure v-if="mindMap" :mindMap="mindMap"></Structure>
+    <ShortcutKey v-if="mindMap"></ShortcutKey>
     <Contextmenu v-if="mindMap" :mindMap="mindMap"></Contextmenu>
     <RichTextToolbar v-if="mindMap" :mindMap="mindMap"></RichTextToolbar>
     <NodeNoteContentShow
@@ -42,7 +46,11 @@
     <FormulaSidebar v-if="mindMap" :mindMap="mindMap"></FormulaSidebar>
     <NodeOuterFrame v-if="mindMap" :mindMap="mindMap"></NodeOuterFrame>
     <NodeTagStyle v-if="mindMap" :mindMap="mindMap"></NodeTagStyle>
-    <Setting :configData="mindMapConfig" :mindMap="mindMap"></Setting>
+    <Setting
+      v-if="mindMap"
+      :configData="mindMapConfig"
+      :mindMap="mindMap"
+    ></Setting>
     <NodeImgPlacementToolbar
       v-if="mindMap"
       :mindMap="mindMap"
@@ -76,7 +84,11 @@ import OuterFrame from 'simple-mind-map/src/plugins/OuterFrame.js'
 import MindMapLayoutPro from 'simple-mind-map/src/plugins/MindMapLayoutPro.js'
 import NodeBase64ImageStorage from 'simple-mind-map/src/plugins/NodeBase64ImageStorage.js'
 import Themes from 'simple-mind-map-plugin-themes'
-import { isSameObject, getImageSize } from 'simple-mind-map/src/utils/index.js'
+import {
+  isSameObject,
+  getImageSize,
+  nodeRichTextToTextWithWrap
+} from 'simple-mind-map/src/utils/index.js'
 import OutlineSidebar from './OutlineSidebar.vue'
 import Style from './Style.vue'
 import BaseStyle from './BaseStyle.vue'
@@ -135,6 +147,7 @@ MindMap.usePlugin(MiniMap)
   .usePlugin(OuterFrame)
   .usePlugin(MindMapLayoutPro)
   .usePlugin(NodeBase64ImageStorage)
+  .usePlugin(RichText)
 
 // 注册主题
 Themes.init(MindMap)
@@ -170,6 +183,7 @@ export default {
   data() {
     return {
       enableShowLoading: true,
+      tmpMindMap: null,
       mindMap: null,
       mindMapData: null,
       mindMapConfig: {},
@@ -179,13 +193,13 @@ export default {
       isSaving: false,
       savingTimer: null,
       storeConfigTimer: null,
-      isNotTriggerDataChange: false
+      isNotTriggerDataChange: false,
+      dragEnterNode: null
     }
   },
   computed: {
     ...mapState({
       isZenMode: state => state.localConfig.isZenMode,
-      openNodeRichText: state => state.localConfig.openNodeRichText,
       isShowScrollbar: state => state.localConfig.isShowScrollbar,
       useLeftKeySelectionRightKeyDrag: state =>
         state.localConfig.useLeftKeySelectionRightKeyDrag,
@@ -195,13 +209,6 @@ export default {
     })
   },
   watch: {
-    openNodeRichText() {
-      if (this.openNodeRichText) {
-        this.addRichTextPlugin()
-      } else {
-        this.removeRichTextPlugin()
-      }
-    },
     isShowScrollbar() {
       if (this.isShowScrollbar) {
         this.addScrollbarPlugin()
@@ -239,6 +246,7 @@ export default {
     this.$root.$bus.$on('getMindMapCurrentData', this.emitMindMapCurrentData)
     this.$root.$bus.$on('obTabDeactivate', this.onObTabDeactivate)
     this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$on('jumpToNodeByUid', this.jumpToNodeByUid)
   },
   beforeDestroy() {
     this.$root.$bus.$off('execCommand', this.execCommand)
@@ -266,6 +274,7 @@ export default {
     this.$root.$bus.$off('getMindMapCurrentData', this.emitMindMapCurrentData)
     this.$root.$bus.$off('obTabDeactivate', this.onObTabDeactivate)
     this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$off('jumpToNodeByUid', this.jumpToNodeByUid)
     clearTimeout(this.autoSaveTimer)
     clearTimeout(this.savingTimer)
     this.mindMap.destroy()
@@ -304,6 +313,7 @@ export default {
     },
 
     handleResize() {
+      if (!this.mindMap) return
       this.mindMap.resize()
     },
 
@@ -333,8 +343,9 @@ export default {
     init() {
       let { root, layout, theme, view } = this.mindMapData
       const config = this.mindMapConfig
-      this.mindMap = new MindMap({
+      this.tmpMindMap = new MindMap({
         el: this.$refs.mindMapContainer,
+        touchEventBindEl: this.$refs.mindMapContainer,
         data: root,
         fit: false,
         layout: layout,
@@ -366,6 +377,7 @@ export default {
             top: top - this.mindMap.elRect.top
           }
         },
+        textEidtNoOverCanvas: true,
         customHandleClipboardText: handleClipboardText,
         defaultNodeImage: imgFail,
         initRootNodePosition: ['center', 'center'],
@@ -515,7 +527,13 @@ export default {
           }
         }
       })
-      this.loadPlugins()
+      this.afterInitMindMap(this.tmpMindMap)
+    },
+
+    afterInitMindMap(mindMap) {
+      mindMap.on('node_tree_render_end', this.onFirstNodeTreeRenderEnd)
+
+      this.loadPlugins(mindMap)
 
       // 转发事件
       ;[
@@ -547,20 +565,16 @@ export default {
         'node_mousedown',
         'node_img_dblclick'
       ].forEach(event => {
-        this.mindMap.on(event, (...args) => {
+        mindMap.on(event, (...args) => {
           this.$root.$bus.$emit(event, ...args)
         })
       })
       this.bindSaveEvent()
-
-      // 判断是否需要定位到某个节点
-      if (this.$root.$obsidianAPI.getInitLocationNodeId()) {
-        this.mindMap.on('node_tree_render_end', this.onInitLocationNodeId)
-      }
     },
 
     // 切换到其他标签页时结束一些状态
     onObTabDeactivate() {
+      if (!this.mindMap) return
       this.mindMap.renderer.textEdit.hideEditTextBox()
       if (this.mindMap.associativeLine) {
         this.mindMap.associativeLine.hideEditTextBox()
@@ -572,18 +586,34 @@ export default {
       this.mindMap.emit('draw_click')
     },
 
-    // 定位到某个节点
-    onInitLocationNodeId() {
+    // 首次节点树渲染完毕
+    onFirstNodeTreeRenderEnd() {
+      this.mindMap = this.tmpMindMap
+      this.tmpMindMap = null
+      // 判断是否需要定位到某个节点
       let nodeId = this.$root.$obsidianAPI.getInitLocationNodeId()
-      nodeId = nodeId.replace(/^#/, '')
-      this.mindMap.execCommand('GO_TARGET_NODE', nodeId)
-      this.mindMap.off('node_tree_render_end', this.onInitLocationNodeId)
+      if (nodeId) {
+        nodeId = nodeId
+          .replace(/^#\^/, '')
+          .replace(/^#/, '')
+          .replace(/^\^/, '')
+        this.mindMap.execCommand('GO_TARGET_NODE', nodeId)
+      }
+      this.mindMap.off('node_tree_render_end', this.onFirstNodeTreeRenderEnd)
+      this.hideLoading()
+      this.$emit('loadend')
+    },
+
+    jumpToNodeByUid(uid) {
+      if (!this.mindMap) {
+        return
+      }
+      this.mindMap.execCommand('GO_TARGET_NODE', uid)
     },
 
     // 加载相关插件
-    loadPlugins() {
-      if (this.openNodeRichText) this.addRichTextPlugin()
-      if (this.isShowScrollbar) this.addScrollbarPlugin()
+    loadPlugins(mindMap) {
+      if (this.isShowScrollbar) this.addScrollbarPlugin(mindMap)
     },
 
     // 动态设置思维导图数据
@@ -606,14 +636,6 @@ export default {
       }
       this.mindMap.view.reset()
       this.saveToLocal()
-      // 如果导入的是富文本内容，那么自动开启富文本模式
-      if (rootNodeData.data.richText && !this.openNodeRichText) {
-        this.$root.$bus.$emit('toggleOpenNodeRichText', true)
-        this.$notify.info({
-          title: this.$t('edit.tip'),
-          message: this.$t('edit.autoOpenNodeRichTextTip')
-        })
-      }
     },
 
     // 从obsidian获取数据后更新思维导图数据
@@ -720,11 +742,16 @@ export default {
             this.isSaving = false
             return
           }
+          const {
+            compressImageIsTransparent,
+            saveCanvasViewData
+          } = this.$root.$obsidianAPI.getSettings()
+          if (!saveCanvasViewData) {
+            data.view = null
+          }
           let svgData = ''
           if (getSvg) {
             const hasImg = checkMindTreeHasImg(data.root)
-            const { compressImageIsTransparent } =
-              this.$root.$obsidianAPI.getSettings()
             svgData = await this.mindMap.export(
               hasImg ? 'png' : 'svg',
               false,
@@ -751,7 +778,14 @@ export default {
     // 更新内链到md文档
     updateInnerLink(data) {
       const obLinkMap = {}
+      const textData = []
+      const { supportObSearch } = this.$root.$obsidianAPI.getSettings()
       dfsTraverse(data.root, node => {
+        if (supportObSearch) {
+          textData.push(
+            nodeRichTextToTextWithWrap(node.data.text) + ' ^' + node.data.uid
+          )
+        }
         // 超链接
         const { hyperlink, hyperlinkTitle } = node.data
         if (
@@ -763,23 +797,32 @@ export default {
           obLinkMap[hyperlinkTitle] = true
         }
       })
-      return Object.keys(obLinkMap).map(key => {
-        return key
-      })
+      return {
+        linkData: Object.keys(obLinkMap).map(key => {
+          return key
+        }),
+        textData
+      }
     },
 
     // 发送最新数据给ob保存
     emitMindMapCurrentData() {
       try {
+        if (!this.mindMap) return
         const data = this.mindMap.getData(true)
         if (!data || !data.root) {
           this.$root.$obsidianAPI.showTip(this.$t('edit.savingTip2'))
           return
         }
-        const linkData = this.updateInnerLink(data)
+        const { saveCanvasViewData } = this.$root.$obsidianAPI.getSettings()
+        if (!saveCanvasViewData) {
+          data.view = null
+        }
+        const { linkData, textData } = this.updateInnerLink(data)
         this.$root.$obsidianAPI.getMindMapCurrentData(
           JSON.stringify(data),
-          linkData
+          linkData,
+          textData
         )
       } catch (error) {
         console.log(error)
@@ -813,26 +856,162 @@ export default {
       this.mindMap.updateConfig(data)
     },
 
-    // 加载节点富文本编辑插件
-    addRichTextPlugin() {
-      if (!this.mindMap) return
-      this.mindMap.addPlugin(RichText)
-    },
-
-    // 移除节点富文本编辑插件
-    removeRichTextPlugin() {
-      this.mindMap.removePlugin(RichText)
-    },
-
     // 加载滚动条插件
-    addScrollbarPlugin() {
-      if (!this.mindMap) return
-      this.mindMap.addPlugin(ScrollbarPlugin)
+    addScrollbarPlugin(mindMap) {
+      mindMap = mindMap || this.mindMap
+      if (!mindMap) return
+      mindMap.addPlugin(ScrollbarPlugin)
     },
 
     // 移除滚动条插件
     removeScrollbarPlugin() {
       this.mindMap.removePlugin(ScrollbarPlugin)
+    },
+
+    // 拖拽进入节点事件
+    onDragEnter(e) {
+      e.preventDefault()
+      const node = this.getDragEnterNode(e)
+      if (node) {
+        if (this.dragEnterNode && this.dragEnterNode.uid === node.uid) {
+          // 和当前移入节点一样，啥也不干
+        } else {
+          // 否则先取消当前节点的激活状态
+          if (this.dragEnterNode) {
+            if (this.dragEnterNode.getData('isActive')) {
+              this.mindMap.renderer.removeNodeFromActiveList(this.dragEnterNode)
+            }
+          }
+          // 然后激活并存储当前移入节点
+          this.mindMap.renderer.addNodeToActiveList(node)
+          this.dragEnterNode = node
+          this.mindMap.renderer.emitNodeActiveEvent()
+        }
+      } else {
+        // 没有移入节点，取消当前节点的激活状态
+        if (this.dragEnterNode) {
+          this.mindMap.renderer.removeNodeFromActiveList(this.dragEnterNode)
+          this.mindMap.renderer.emitNodeActiveEvent()
+          this.dragEnterNode = null
+        }
+      }
+    },
+
+    // 获取拖拽进入的节点
+    getDragEnterNode(e) {
+      let res = null
+      const { x, y } = this.mindMap.toPos(e.clientX, e.clientY)
+      const {
+        scaleX,
+        scaleY,
+        translateX,
+        translateY
+      } = this.mindMap.draw.transform()
+      const check = node => {
+        let { left, top, width, height } = node
+        let right = (left + width) * scaleX + translateX
+        let bottom = (top + height) * scaleY + translateY
+        left = left * scaleX + translateX
+        top = top * scaleY + translateY
+        return x > left && x < right && y > top && y < bottom
+      }
+      const walk = node => {
+        if (check(node)) {
+          res = node
+          return
+        }
+        // 概要节点
+        if (node._generalizationList && node._generalizationList.length > 0) {
+          let exist = false
+          node._generalizationList.forEach(item => {
+            if (check(item.generalizationNode)) {
+              res = item.generalizationNode
+              exist = true
+            }
+          })
+          if (exist) {
+            return
+          }
+        }
+        if (node.children && node.children.length > 0) {
+          node.children.forEach(item => {
+            walk(item)
+          })
+        }
+      }
+      walk(this.mindMap.renderer.root)
+      return res
+    },
+
+    // 拖拽插入图片或文件到某个节点
+    // 支持：ob仓库文件、本地文件、图片、文字
+    onDrop(e) {
+      e.preventDefault()
+      if (!this.dragEnterNode) return
+      const textData = e.dataTransfer?.getData('text/plain')
+      const files = e.dataTransfer?.files
+      if (textData || files.length > 0) {
+        this.insertDragDataToNode({ textData, files, node: this.dragEnterNode })
+      }
+      this.dragEnterNode = null
+    },
+
+    // 插入拖拽数据到节点
+    async insertDragDataToNode({ textData, files, node }) {
+      let err = ''
+      let fileUrl = ''
+      // 先检查文本数据是否为ob文件
+      if (textData) {
+        const tFile = this.$root.$obsidianAPI.getFileFromUri(textData)
+        // ob文件
+        if (tFile) {
+          fileUrl = tFile.path
+        }
+      }
+      // 没有文本数据，则检查文件数据
+      if (!fileUrl && files.length > 0) {
+        const file = files[0]
+        // 将文件上传到ob仓库
+        const result = await this.$root.$obsidianAPI.saveFileToVault(
+          file,
+          false
+        )
+        if (result) {
+          fileUrl = result
+        } else {
+          err = this.$t('nodeHyperlink.tip4')
+        }
+      }
+      if (!fileUrl) {
+        this.$root.$obsidianAPI.showTip(err || this.$t('nodeHyperlink.tip5'))
+        return
+      }
+      // if (node.isGeneratorFunction) {
+      //   console.log(node)
+      //   return
+      // }
+      // 图片直接以图片形式插入
+      if (/\.(jpg|jpeg|png|gif|webp)$/.test(fileUrl)) {
+        const viewUrl = this.$root.$obsidianAPI.getResourcePath(fileUrl)
+        const { width, height } = await getImageSize(viewUrl)
+        node.setImage({
+          url: fileUrl,
+          title: '',
+          width,
+          height
+        })
+      } else {
+        // 文件以链接形式插入
+        // 获取上传的文件的路径数据
+        const result = this.$root.$obsidianAPI.createLinkInfoFromFilePath(
+          fileUrl
+        )
+        if (!result) {
+          this.$root.$obsidianAPI.showTip(this.$t('nodeHyperlink.tip2'))
+          return
+        }
+        node.setHyperlink(result.link, result.linkText || '')
+      }
     }
   }
 }

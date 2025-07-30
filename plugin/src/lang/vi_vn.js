@@ -218,7 +218,8 @@ export default {
     mdImportDialogTitle: 'Dán nội dung Markdown để nhập',
     mdPlaceholder: 'Vui lòng nhập nội dung ở định dạng Markdown',
     mdEmptyTip: 'Nội dung không được trống',
-    mdImportFailTip: 'Nhập thất bại, không phân tích cú pháp để nhập nội dung. Chỉ hỗ trợ cú pháp như tiêu đề, danh sách, v.v.'
+    mdImportFailTip: 'Nhập thất bại, không phân tích cú pháp để nhập nội dung. Chỉ hỗ trợ cú pháp như tiêu đề, danh sách, v.v.',
+    rootNodeName: 'Nút gốc'
   },
   navigatorToolbar: {
     openMiniMap: 'Mở bản đồ thu nhỏ',
@@ -255,7 +256,8 @@ export default {
     tip1: 'Vui lòng nhập địa chỉ liên kết',
     tip2: 'Chèn không thành công, tập tin không tồn tại',
     tip3: 'Vui lòng chọn tập tin cục bộ',
-    tip4: 'Tải tập tin lên Vault không thành công'
+    tip4: 'Tải tập tin lên Vault không thành công',
+    tip5: 'Chèn không thành công'
   },
   nodeIcon: {
     title: 'Biểu tượng'

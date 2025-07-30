@@ -152,7 +152,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { downTypeList } from '@/config'
-import { isMobile, createUid } from 'simple-mind-map/src/utils/index'
+import { createUid } from 'simple-mind-map/src/utils/index'
 import MarkdownIt from 'markdown-it'
 import { isHyperlink, isNormalUrl, imageUrlToBase64 } from '@/utils'
 
@@ -171,15 +171,14 @@ export default {
       paddingX: 10,
       paddingY: 10,
       extraText: '',
-      isMobile: isMobile(),
       isFitBg: true,
       imageFormat: 'png'
     }
   },
   computed: {
     ...mapState({
-      openNodeRichText: state => state.localConfig.openNodeRichText,
-      isDark: state => state.localConfig.isDark
+      isDark: state => state.localConfig.isDark,
+      isMobile: state => state.isMobile
     }),
 
     downTypeList() {

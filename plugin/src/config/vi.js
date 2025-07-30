@@ -361,6 +361,16 @@ export const shortcutKeyList = [
         icon: 'iconshubiaoyidong',
         name: 'Di chuyển Canvas',
         value: `Trái / Phải / Phím cách + Trái`
+      },
+      {
+        icon: 'iconshangxiayidong',
+        name: 'Di chuyển Canvas lên và xuống',
+        value: `Cuộn chuột`
+      },
+      {
+        icon: 'iconzuoyouyidong',
+        name: 'Di chuyển canvas trái và phải',
+        value: `Shift + Cuộn chuột`
       }
     ]
   },

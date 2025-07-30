@@ -1,10 +1,10 @@
 <template>
   <div
-    class="contextmenuContainer listBox"
+    class="contextmenuContainer contextmenuListBox smmCustomScrollbar"
     v-if="isShow"
     ref="contextmenuRef"
-    :style="{ left: left + 'px', top: top + 'px' }"
-    :class="{ isDark: isDark }"
+    :style="styleObj"
+    :class="{ isDark: isDark, isMobile: isMobile }"
   >
     <template v-if="type === 'node'">
       <div
@@ -109,11 +109,13 @@
       >
         <span class="name">{{ $t('contextmenu.removeCustomWidth') }}</span>
       </div>
-      <div class="item">
-        <span class="name">{{ $t('contextmenu.exportNodeToPng') }}</span>
-        <span class="el-icon-arrow-right"></span>
+      <div class="item withSubItems">
+        <div class="itemRow">
+          <span class="name">{{ $t('contextmenu.exportNodeToPng') }}</span>
+          <span class="el-icon-arrow-right"></span>
+        </div>
         <div
-          class="subItems listBox"
+          class="subItems contextmenuListBox"
           :class="{ isDark: isDark, showLeft: subItemsShowLeft }"
           style="top: -17px"
         >
@@ -141,11 +143,13 @@
       <div class="item" @click="exec('UNEXPAND_ALL')">
         <span class="name">{{ $t('contextmenu.unExpandAll') }}</span>
       </div>
-      <div class="item">
-        <span class="name">{{ $t('contextmenu.expandTo') }}</span>
-        <span class="el-icon-arrow-right"></span>
+      <div class="item withSubItems">
+        <div class="itemRow">
+          <span class="name">{{ $t('contextmenu.expandTo') }}</span>
+          <span class="el-icon-arrow-right"></span>
+        </div>
         <div
-          class="subItems listBox"
+          class="subItems contextmenuListBox"
           :class="{ isDark: isDark, showLeft: subItemsShowLeft }"
           style="top: -10px"
         >
@@ -191,11 +195,13 @@
           $t('contextmenu.removeAllCustomWidth')
         }}</span>
       </div>
-      <div class="item">
-        <span class="name">{{ $t('contextmenu.copyToClipboard') }}</span>
-        <span class="el-icon-arrow-right"></span>
+      <div class="item withSubItems">
+        <div class="itemRow">
+          <span class="name">{{ $t('contextmenu.copyToClipboard') }}</span>
+          <span class="el-icon-arrow-right"></span>
+        </div>
         <div
-          class="subItems listBox"
+          class="subItems contextmenuListBox"
           :class="{ isDark: isDark, showLeft: subItemsShowLeft }"
           style="top: -130px"
         >
@@ -242,14 +248,16 @@ export default {
       mosuedownY: 0,
       enableCopyToClipboardApi: navigator.clipboard,
       subItemsShowLeft: false,
-      isNodeMousedown: false
+      isNodeMousedown: false,
+      listBoxWidth: '250px'
     }
   },
   computed: {
     ...mapState({
       isZenMode: state => state.localConfig.isZenMode,
       isDark: state => state.localConfig.isDark,
-      isReadonly: state => state.isReadonly
+      isReadonly: state => state.isReadonly,
+      isMobile: state => state.isMobile
     }),
     expandList() {
       return [
@@ -324,6 +332,17 @@ export default {
     },
     hasCustomTextWidth() {
       return this.node.hasCustomWidth()
+    },
+    styleObj() {
+      const res = {
+        left: this.left + 'px',
+        top: this.top + 'px',
+        width: this.listBoxWidth
+      }
+      if (this.isMobile) {
+        res.bottom = '37px'
+      }
+      return res
     }
   },
   created() {
@@ -335,6 +354,10 @@ export default {
     this.$root.$bus.$on('mouseup', this.onMouseup)
     this.$root.$bus.$on('translate', this.hide)
     this.$root.$bus.$on('node_mousedown', this.onNodeMousedown)
+    if (this.isMobile) {
+      this.$root.$bus.$on('show_node_context_menu', this.show)
+      this.$root.$bus.$on('show_canvas_context_menu', this.show2)
+    }
   },
   beforeDestroy() {
     this.$root.$bus.$off('node_contextmenu', this.show)
@@ -345,12 +368,24 @@ export default {
     this.$root.$bus.$off('mouseup', this.onMouseup)
     this.$root.$bus.$off('translate', this.hide)
     this.$root.$bus.$off('node_mousedown', this.onNodeMousedown)
+    if (this.isMobile) {
+      this.$root.$bus.$off('show_node_context_menu', this.show)
+      this.$root.$bus.$off('show_canvas_context_menu', this.show2)
+    }
   },
   methods: {
     ...mapMutations(['setLocalConfig']),
 
     // 计算右键菜单元素的显示位置
     getShowPosition(x, y) {
+      if (this.isMobile) {
+        this.listBoxWidth =
+          Math.min(250, this.mindMap.width - 42 - 50 - 20) + 'px'
+        return {
+          x: 52,
+          y: 60
+        }
+      }
       const elRect = this.mindMap.elRect
       x -= elRect.left
       y -= elRect.top
@@ -498,7 +533,7 @@ export default {
         case 'COPY_NODE_TO_OB_LINK':
           const link2 = this.$root.$obsidianAPI.getObInternalLink(
             '',
-            '#' + this.node.getData('uid')
+            '#^' + this.node.getData('uid')
           )
           copy(link2)
           this.$root.$obsidianAPI.showTip(this.$t('contextmenu.copySuccess'))
@@ -575,8 +610,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.listBox {
-  width: 250px;
+.contextmenuListBox {
   background: #fff;
   box-shadow: 0 4px 12px 0 hsla(0, 0%, 69%, 0.5);
   border-radius: 4px;
@@ -586,6 +620,10 @@ export default {
   &.isDark {
     background: #363b3f;
   }
+
+  &.subItems {
+    width: 250px;
+  }
 }
 .contextmenuContainer {
   position: absolute;
@@ -594,6 +632,32 @@ export default {
   font-weight: 400;
   color: #1a1a1a;
   z-index: 2;
+
+  &.isMobile {
+    overflow-y: auto;
+
+    .item {
+      &.withSubItems {
+        width: 100%;
+        flex-direction: column;
+        min-height: 28px;
+        height: max-content;
+      }
+
+      .subItems {
+        margin: 10px 0;
+        margin-left: auto;
+        width: 90%;
+        position: static;
+        visibility: visible;
+        background-color: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        border-left: 2px solid #999;
+        padding: 0;
+      }
+    }
+  }
 
   &.isDark {
     color: #fff;
@@ -641,6 +705,13 @@ export default {
       &:hover {
         background: #fff;
       }
+    }
+
+    .itemRow {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .name {

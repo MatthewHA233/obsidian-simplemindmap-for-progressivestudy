@@ -3,7 +3,7 @@ import LZString from 'lz-string'
 
 export const parseMarkdownText = text => {
   const result = {
-    metadata: { path: '', tags: [], content: '' },
+    metadata: { path: '', tags: [], yaml: '', content: '' },
     svgdata: '',
     linkdata: []
   }
@@ -13,6 +13,7 @@ export const parseMarkdownText = text => {
   let currentSection = ''
   let inCodeBlock = false
   let inYamlHeader = false
+  let inTags = false
   let codeBlockContent = []
 
   for (const line of lines) {
@@ -32,6 +33,9 @@ export const parseMarkdownText = text => {
     } else if (line.startsWith('# linkdata')) {
       currentSection = 'linkdata'
       continue
+    } else if (line.startsWith('# textdata')) {
+      // 用于搜索的节点文本数据，遍历到这个即可结束
+      break
     }
 
     // Handle code blocks
@@ -59,11 +63,18 @@ export const parseMarkdownText = text => {
     } else if (currentSection === 'linkdata' && line.startsWith('- ')) {
       result.linkdata.push(line.replace('- ', '').trim())
     } else if (inYamlHeader) {
-      // Parse YAML metadata
-      if (line.startsWith('path:')) {
-        result.metadata.path = line.split(':')[1].trim()
-      } else if (line.startsWith('  -')) {
+      // 解析YAML
+      if (line.startsWith('tags:')) {
+        inTags = true
+      } else if (inTags && line.startsWith('  -')) {
         result.metadata.tags.push(line.replace('  -', '').trim())
+      } else {
+        inTags = false
+        if (line.startsWith('path:')) {
+          result.metadata.path = line.split(':')[1].trim()
+        } else if (line) {
+          result.metadata.yaml += line + '\n'
+        }
       }
     }
   }
@@ -79,6 +90,9 @@ export const assembleMarkdownText = obj => {
   result += 'tags:\n'
   for (const tag of obj.metadata.tags) {
     result += `  - ${tag}\n`
+  }
+  if (obj.metadata.yaml) {
+    result += obj.metadata.yaml
   }
   result += '---\n'
 
@@ -100,6 +114,12 @@ export const assembleMarkdownText = obj => {
     result += `- ${item}\n`
   }
 
+  // Assemble textdata section
+  result += '# textdata\n'
+  if (obj.textdata && Array.isArray(obj.textdata)) {
+    result += obj.textdata.join('\n\n')
+  }
+
   return result
 }
 
@@ -113,6 +133,7 @@ export const createDefaultText = (filePath, options) => {
     metadata: {
       path: `${filePath || ''}`,
       tags: [SMM_TAG],
+      yaml: '',
       content: createDefaultMindMapData(options)
     },
     svgdata: '',

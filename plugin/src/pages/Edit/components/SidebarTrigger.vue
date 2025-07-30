@@ -54,11 +54,17 @@ export default {
     ...mapState({
       isDark: state => state.localConfig.isDark,
       activeSidebar: state => state.activeSidebar,
-      isReadonly: state => state.isReadonly
+      isReadonly: state => state.isReadonly,
+      isMobile: state => state.isMobile
     }),
 
     triggerList() {
       let list = sidebarTriggerList[this.$i18n.locale] || sidebarTriggerList.en
+      if (this.isMobile) {
+        list = list.filter(item => {
+          return !['outline'].includes(item.value)
+        })
+      }
       if (this.isReadonly) {
         list = list.filter(item => {
           return ['outline'].includes(item.value)

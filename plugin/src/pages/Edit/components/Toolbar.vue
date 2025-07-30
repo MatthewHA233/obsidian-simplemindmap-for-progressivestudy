@@ -44,7 +44,7 @@ import Export from './Export.vue'
 import Import from './Import.vue'
 import { mapState } from 'vuex'
 import ToolbarNodeBtnList from './ToolbarNodeBtnList.vue'
-import { throttle, isMobile } from 'simple-mind-map/src/utils/index'
+import { throttle } from 'simple-mind-map/src/utils/index'
 
 // 工具栏
 const defaultBtnList = [
@@ -80,7 +80,6 @@ export default {
   },
   data() {
     return {
-      isMobile: isMobile(),
       horizontalList: [],
       verticalList: [],
       showMoreBtn: true,
@@ -98,17 +97,11 @@ export default {
   computed: {
     ...mapState({
       isDark: state => state.localConfig.isDark,
-      openNodeRichText: state => state.localConfig.openNodeRichText
+      isMobile: state => state.isMobile
     }),
 
     btnLit() {
-      let res = [...defaultBtnList]
-      if (!this.openNodeRichText) {
-        res = res.filter(item => {
-          return item !== 'formula'
-        })
-      }
-      return res
+      return [...defaultBtnList]
     }
   },
   watch: {

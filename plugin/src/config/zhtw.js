@@ -357,6 +357,16 @@ export const shortcutKeyList = [
         icon: 'iconshubiaoyidong',
         name: '移動畫布',
         value: `左鍵 / 右鍵 / 空白鍵 + 左鍵`
+      },
+      {
+        icon: 'iconshangxiayidong',
+        name: '上下移動畫布',
+        value: `滑鼠滾輪`
+      },
+      {
+        icon: 'iconzuoyouyidong',
+        name: '左右移動畫布',
+        value: `Shift + 滑鼠滾輪`
       }
     ]
   },

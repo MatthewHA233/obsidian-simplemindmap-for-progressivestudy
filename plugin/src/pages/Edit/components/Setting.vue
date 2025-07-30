@@ -360,7 +360,7 @@
           >
         </div>
       </div>
-       <!-- 是否显示底部工具栏 -->
+      <!-- 是否显示底部工具栏 -->
       <div class="row">
         <div class="rowItem">
           <el-checkbox
@@ -467,13 +467,6 @@ export default {
   },
   created() {
     this.initLoacalConfig()
-    this.$root.$bus.$on('toggleOpenNodeRichText', this.onToggleOpenNodeRichText)
-  },
-  beforeDestroy() {
-    this.$root.$bus.$off(
-      'toggleOpenNodeRichText',
-      this.onToggleOpenNodeRichText
-    )
   },
   methods: {
     ...mapMutations(['setLocalConfig']),
@@ -556,12 +549,6 @@ export default {
       this.updateWatermarkConfig()
     },
 
-    onToggleOpenNodeRichText(val) {
-      this.setLocalConfig({
-        openNodeRichText: val
-      })
-    },
-
     // 本地配置
     updateLocalConfig(key, value) {
       this.setLocalConfig({
@@ -581,12 +568,8 @@ export default {
     setConfig({ localConfig, config }) {
       Object.keys(localConfig).forEach(key => {
         const value = localConfig[key]
-        if (key === 'openNodeRichText') {
-          this.onToggleOpenNodeRichText(value)
-        } else {
-          this.localConfigs[key] = value
-          this.updateLocalConfig(key, value)
-        }
+        this.localConfigs[key] = value
+        this.updateLocalConfig(key, value)
       })
       Object.keys(config).forEach(key => {
         const value = config[key]

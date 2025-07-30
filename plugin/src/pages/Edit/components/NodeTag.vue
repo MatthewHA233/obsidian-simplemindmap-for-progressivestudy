@@ -45,10 +45,8 @@
 </template>
 
 <script>
-import {
-  generateColorByContent,
-  isMobile
-} from 'simple-mind-map/src/utils/index'
+import { generateColorByContent } from 'simple-mind-map/src/utils/index'
+import { mapState } from 'vuex'
 
 // 节点标签内容设置
 export default {
@@ -58,9 +56,13 @@ export default {
       tagArr: [],
       tag: '',
       activeNodes: [],
-      max: 5,
-      isMobile: isMobile()
+      max: 5
     }
+  },
+  computed: {
+    ...mapState({
+      isMobile: state => state.isMobile
+    })
   },
   watch: {
     dialogVisible(val, oldVal) {

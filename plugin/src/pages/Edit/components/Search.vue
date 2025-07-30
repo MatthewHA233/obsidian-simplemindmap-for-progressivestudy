@@ -256,6 +256,7 @@ export default {
   transition: all 0.3s;
   opacity: 0;
   transform: translateY(-10px);
+  visibility: hidden;
 
   &.isDark {
     background-color: #363b3f;
@@ -269,6 +270,7 @@ export default {
   &.show {
     opacity: 1;
     transform: translateY(0);
+    visibility: visible;
   }
 
   .btnList {

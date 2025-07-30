@@ -6,10 +6,10 @@
   >
     <template v-if="show && !isOutlineEdit">
       <Toolbar
-        v-if="!isZenMode && !isReadonly"
+        v-if="loadToolbar && !isZenMode && !isReadonly"
         :getContainerSize="getContainerSize"
       ></Toolbar>
-      <Edit></Edit>
+      <Edit @loadend="onMindMapLoadend"></Edit>
     </template>
     <OutlineEdit v-if="isOutlineEdit"></OutlineEdit>
     <Guide v-if="showGuide"></Guide>
@@ -35,7 +35,8 @@ export default {
   data() {
     return {
       show: false,
-      showGuide: false
+      showGuide: false,
+      loadToolbar: false
     }
   },
   computed: {
@@ -54,6 +55,10 @@ export default {
     }
   },
   async created() {
+    const isMobile = this.$root.$obsidianAPI.isMobile()
+    if (isMobile) {
+      this.setIsMobile(true)
+    }
     this.initLocalConfig()
     this.show = true
     this.$root.$bus.$on('showOutlineEdit', this.showOutlineEdit)
@@ -62,7 +67,7 @@ export default {
     this.$root.$bus.$on('setShowGuide', this.onSetShowGuide)
     this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
     const { isFirstUse } = this.$root.$obsidianAPI.getSettings()
-    this.showGuide = isFirstUse || false
+    this.showGuide = (isFirstUse || false) && !isMobile
   },
   beforeDestroy() {
     this.$root.$bus.$off('showOutlineEdit', this.showOutlineEdit)
@@ -72,7 +77,16 @@ export default {
     this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
   },
   methods: {
-    ...mapMutations(['setLocalConfig', 'setIsOutlineEdit', 'setIsReadonly']),
+    ...mapMutations([
+      'setLocalConfig',
+      'setIsOutlineEdit',
+      'setIsReadonly',
+      'setIsMobile'
+    ]),
+
+    onMindMapLoadend() {
+      this.loadToolbar = true
+    },
 
     onToggleReadonly(isReadonly) {
       this.setIsReadonly(isReadonly)

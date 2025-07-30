@@ -17,7 +17,8 @@ export default {
     return {
       textStr: '',
       words: 0,
-      num: 0
+      num: 0,
+      statusEl: null
     }
   },
   computed: {
@@ -32,6 +33,10 @@ export default {
     }
   },
   beforeDestroy() {
+    if (this.statusEl) {
+      this.statusEl.innerHTML = ''
+      this.statusEl = null
+    }
     this.$root.$bus.$off('data_change', this.onDataChange)
   },
   methods: {
@@ -43,9 +48,9 @@ export default {
       this.walk(data)
       countEl.innerHTML = this.textStr
       this.words = countEl.textContent.length
-      const el = document.querySelector('.smm-file-status')
-      if (el) {
-        el.innerHTML = `
+      this.statusEl = document.querySelector('.smm-file-status')
+      if (this.statusEl) {
+        this.statusEl.innerHTML = `
         <span class="smm-file-status-item">${this.$t('count.words')} ${
           this.words
         }</span>

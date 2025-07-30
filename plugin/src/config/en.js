@@ -357,6 +357,16 @@ export const shortcutKeyList = [
         icon: 'iconshubiaoyidong',
         name: 'Moving canvas',
         value: `Left click / Right click / Space bar + Left click`
+      },
+       {
+        icon: 'iconshangxiayidong',
+        name: 'Move the canvas up and down',
+        value: `Mouse wheel`
+      },
+      {
+        icon: 'iconzuoyouyidong',
+        name: 'Move the canvas left and right',
+        value: `Shift + Mouse wheel`
       }
     ]
   },
