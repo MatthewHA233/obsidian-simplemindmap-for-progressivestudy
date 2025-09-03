@@ -9,6 +9,7 @@ import LZString from 'lz-string'
 import { SMM_VIEW_TYPE, SMM_TAG } from './constant.js'
 import { around } from 'monkey-around'
 import markdown from 'simple-mind-map/src/parse/markdown.js'
+import SmmEditView from '../SmmEditView.js'
 
 export default class Menus {
   constructor(plugin) {
@@ -103,8 +104,10 @@ export default class Menus {
                     const markdownLeafs =
                       this.app.workspace.getLeavesOfType(SMM_VIEW_TYPE)
                     for (const leaf of markdownLeafs) {
-                      if (leaf.view.file.path === renamedFile.path) {
-                        leaf.view.isActive = false
+                      if (
+                        leaf.view instanceof SmmEditView &&
+                        leaf.view.file.path === renamedFile.path
+                      ) {
                         leaf.detach()
                         break
                       }
@@ -230,7 +233,10 @@ export default class Menus {
                         const markdownLeafs =
                           this.app.workspace.getLeavesOfType('markdown')
                         for (const leaf of markdownLeafs) {
-                          if (leaf.view.file.path === renamedFile.path) {
+                          if (
+                            leaf.view instanceof MarkdownView &&
+                            leaf.view.file.path === renamedFile.path
+                          ) {
                             leaf.detach()
                             break
                           }

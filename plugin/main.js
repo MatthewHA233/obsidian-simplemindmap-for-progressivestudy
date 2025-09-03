@@ -272,7 +272,10 @@ export default class SimpleMindMapPlugin extends Plugin {
                           return file && file === curFilePath
                         })
                       if (existLeaf) {
-                        if (existLeaf.view.jumpToNodeByUid) {
+                        if (
+                          existLeaf.view instanceof SmmEditView &&
+                          existLeaf.view.jumpToNodeByUid
+                        ) {
                           existLeaf.view.jumpToNodeByUid(uid)
                         } else {
                           self.fileToSubpathMap[curFilePath] = uid
