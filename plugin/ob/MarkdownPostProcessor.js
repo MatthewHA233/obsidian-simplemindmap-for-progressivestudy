@@ -165,8 +165,8 @@ export default class MarkdownPostProcessor {
   }
 
   async _processEditMode(el, ctx) {
-    const file = this.plugin.app.vault.getAbstractFileByPath(ctx.sourcePath)
-    if (!(file instanceof TFile) || !this.plugin._isSmmFile(file)) return
+    const file = this.plugin.app.vault.getFileByPath(ctx.sourcePath)
+    if (!this.plugin._isSmmFile(file)) return
     if (ctx.remainingNestLevel !== undefined && ctx.remainingNestLevel < 4)
       return
 

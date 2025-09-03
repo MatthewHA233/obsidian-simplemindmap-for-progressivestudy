@@ -109,7 +109,7 @@ export default class SimpleMindMapPlugin extends Plugin {
       )
       try {
         // 检查文件是否已存在
-        const existingFile = vault.getAbstractFileByPath(filePath)
+        const existingFile = vault.getFileByPath(filePath)
         if (existingFile) {
           // 文件已经存在
           new Notice(this._t('tip.fileExist'))
@@ -424,8 +424,9 @@ export default class SimpleMindMapPlugin extends Plugin {
     if (!dirPath) return
     const { vault } = this.app
     // 检查目录是否存在
-    const dir = vault.getAbstractFileByPath(dirPath)
-    if (!dir) {
+    // getFolderByPath无法检查到隐藏文件夹
+    const exist = await vault.exists(dirPath)
+    if (!exist) {
       // 递归创建目录
       await vault.createFolder(dirPath)
     }

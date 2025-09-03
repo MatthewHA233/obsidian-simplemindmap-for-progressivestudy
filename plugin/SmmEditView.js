@@ -312,7 +312,7 @@ class SmmEditView extends TextFileView {
       },
       // 创建内链文件信息
       createLinkInfoFromFilePath: filePath => {
-        const file = this.app.vault.getAbstractFileByPath(filePath)
+        const file = this.app.vault.getFileByPath(filePath)
         if (!file) {
           return null
         }
@@ -336,9 +336,9 @@ class SmmEditView extends TextFileView {
           postfix = arr.slice(1).join('')
         }
         this.app.vault.getAbstractFileBy
-        let file = this.app.vault.getAbstractFileByPath(filePath)
+        let file = this.app.vault.getFileByPath(filePath)
         if (!file) {
-          file = this.app.vault.getAbstractFileByPath(filePath + '.md')
+          file = this.app.vault.getFileByPath(filePath + '.md')
         }
         if (file && file instanceof TFile) {
           this.app.workspace.openLinkText(file.path + postfix, '', isNewTab)
@@ -427,9 +427,9 @@ class SmmEditView extends TextFileView {
           new Notice(this.plugin._t('tip.onlyEnableSelectCurrentVaultFile'))
           return null
         }
-        let res = this.app.vault.getAbstractFileByPath(filePath)
+        let res = this.app.vault.getFileByPath(filePath)
         if (!res) {
-          res = this.app.vault.getAbstractFileByPath(filePath + '.md')
+          res = this.app.vault.getFileByPath(filePath + '.md')
         }
         return res
       },

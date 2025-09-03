@@ -35,7 +35,7 @@ export default class Commands {
       editorCallback: editor => {
         this.plugin._createSmmFile('', fileName => {
           try {
-            const file = this.app.vault.getAbstractFileByPath(fileName)
+            const file = this.app.vault.getFileByPath(fileName)
             const currentFile = this.app.workspace.getActiveFile()
             if (currentFile?.extension !== 'md') {
               // 当前文件不是markdown文件

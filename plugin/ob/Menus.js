@@ -98,7 +98,7 @@ export default class Menus {
                   let newPath = file.path.replace('.smm.md', '.md')
                   newPath = await this.plugin._getAvailableFilaName(newPath)
                   await this.app.vault.rename(file, newPath)
-                  const renamedFile = this.app.vault.getAbstractFileByPath(
+                  const renamedFile = this.app.vault.getFileByPath(
                     newPath
                   )
                   if (renamedFile) {
@@ -211,7 +211,7 @@ export default class Menus {
                         2
                       )
                       await this.app.vault.rename(this.file, newPath)
-                      const renamedFile = this.app.vault.getAbstractFileByPath(
+                      const renamedFile = this.app.vault.getFileByPath(
                         newPath
                       )
                       const str = assembleMarkdownText({
