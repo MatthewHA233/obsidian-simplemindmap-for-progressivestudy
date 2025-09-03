@@ -64,7 +64,6 @@ export default class SimpleMindMapPlugin extends Plugin {
       this._t('action.createMindMap'), // 新建思维导图
       this._createSmmFile
     )
-    this._setCustomFileIcon()
 
     // 添加命令
     this.commands = new Commands(this)
@@ -363,13 +362,6 @@ export default class SimpleMindMapPlugin extends Plugin {
       return true
     }
     return false
-  }
-
-  // 设置思维导图文件图标
-  _setCustomFileIcon() {
-    if (typeof this.app.vault.setConfigFileIcon === 'function') {
-      this.app.vault.setConfigFileIcon('smm.md', 'smm-icon')
-    }
   }
 
   // 创建状态栏子元素
