@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian'
+import { Notice, MarkdownView } from 'obsidian'
 
 export default class Commands {
   constructor(plugin) {
@@ -32,27 +32,30 @@ export default class Commands {
     this.addCommand({
       id: 'create-smm-mindmap-insert-markdown',
       name: this._t('action.createMindMapInsertToMd'),
-      editorCallback: editor => {
-        this.plugin._createSmmFile('', fileName => {
-          try {
-            const file = this.app.vault.getFileByPath(fileName)
-            const currentFile = this.app.workspace.getActiveFile()
-            if (currentFile?.extension !== 'md') {
-              // 当前文件不是markdown文件
-              new Notice(this._t('tip.fileIsNotMd'))
-              return
-            }
-            const linkText = this.app.fileManager.generateMarkdownLink(
-              file,
-              currentFile?.path || ''
-            )
-            editor.replaceSelection('!' + linkText)
-          } catch (error) {
-            console.error(error)
-            // 新建思维导图失败
-            new Notice(this._t('tip.createMindMapFail'))
+      checkCallback: checking => {
+        const markdownView =
+          this.app.workspace.getActiveViewOfType(MarkdownView)
+        if (markdownView) {
+          if (!checking) {
+            this.plugin._createSmmFile('', fileName => {
+              try {
+                const file = this.app.vault.getFileByPath(fileName)
+                const currentFile = this.app.workspace.getActiveFile()
+                const linkText = this.app.fileManager.generateMarkdownLink(
+                  file,
+                  currentFile?.path || ''
+                )
+                const activeEditor = this.app.workspace.activeEditor
+                activeEditor.editor.replaceSelection('!' + linkText)
+              } catch (error) {
+                console.error(error)
+                new Notice(this._t('tip.createMindMapFail'))
+              }
+            })
           }
-        })
+          return true
+        }
+        return false
       }
     })
   }
