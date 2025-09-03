@@ -49,9 +49,8 @@ export default class Menus {
                 .onClick(async () => {
                   await this.app.workspace.openLinkText(file.path, '')
                   const leaf = this.app.workspace.getLeaf(false)
-                  const mdViewType = this.app.viewRegistry.getTypeByExtension(
-                    'md'
-                  )
+                  const mdViewType =
+                    this.app.viewRegistry.getTypeByExtension('md')
                   await leaf.setViewState({
                     type: mdViewType,
                     state: {
@@ -98,14 +97,11 @@ export default class Menus {
                   let newPath = file.path.replace('.smm.md', '.md')
                   newPath = await this.plugin._getAvailableFilaName(newPath)
                   await this.app.vault.rename(file, newPath)
-                  const renamedFile = this.app.vault.getFileByPath(
-                    newPath
-                  )
+                  const renamedFile = this.app.vault.getFileByPath(newPath)
                   if (renamedFile) {
                     // 关闭当前标签页
-                    const markdownLeafs = this.app.workspace.getLeavesOfType(
-                      SMM_VIEW_TYPE
-                    )
+                    const markdownLeafs =
+                      this.app.workspace.getLeavesOfType(SMM_VIEW_TYPE)
                     for (const leaf of markdownLeafs) {
                       if (leaf.view.file.path === renamedFile.path) {
                         leaf.view.isActive = false
@@ -116,15 +112,20 @@ export default class Menus {
                     // 修改文件内容
                     await this.app.vault.modify(renamedFile, mdStr)
                     // 重新打开
-                    const ref = this.app.metadataCache.on('changed', () => {
-                      this.app.metadataCache.offref(ref)
-                      this.app.workspace.openLinkText(
-                        renamedFile.path,
-                        '',
-                        true
-                      )
-                      new Notice(this._t('tip.changeSuccess'))
-                    })
+                    const ref = this.app.metadataCache.on(
+                      'changed',
+                      changedFile => {
+                        if (changedFile.path === renamedFile.path) {
+                          this.app.metadataCache.offref(ref)
+                          this.app.workspace.openLinkText(
+                            renamedFile.path,
+                            '',
+                            true
+                          )
+                          new Notice(this._t('tip.changeSuccess'))
+                        }
+                      }
+                    )
                   }
                 })
             )
@@ -140,7 +141,7 @@ export default class Menus {
     this.plugin.register(
       around(MarkdownView.prototype, {
         onPaneMenu(next) {
-          return function(menu, source) {
+          return function (menu, source) {
             const res = next.apply(this, [menu, source])
             if (self.plugin._isSmmFile(this.file)) {
               if (source === 'more-options') {
@@ -211,9 +212,7 @@ export default class Menus {
                         2
                       )
                       await this.app.vault.rename(this.file, newPath)
-                      const renamedFile = this.app.vault.getFileByPath(
-                        newPath
-                      )
+                      const renamedFile = this.app.vault.getFileByPath(newPath)
                       const str = assembleMarkdownText({
                         metadata: {
                           path: `${newPath || ''}`,
@@ -228,9 +227,8 @@ export default class Menus {
                       })
                       if (renamedFile) {
                         // 关闭当前标签页
-                        const markdownLeafs = this.app.workspace.getLeavesOfType(
-                          'markdown'
-                        )
+                        const markdownLeafs =
+                          this.app.workspace.getLeavesOfType('markdown')
                         for (const leaf of markdownLeafs) {
                           if (leaf.view.file.path === renamedFile.path) {
                             leaf.detach()
@@ -240,15 +238,20 @@ export default class Menus {
                         // 修改文件内容
                         await this.app.vault.modify(renamedFile, str)
                         // 重新打开
-                        const ref = this.app.metadataCache.on('changed', () => {
-                          this.app.metadataCache.offref(ref)
-                          this.app.workspace.openLinkText(
-                            renamedFile.path,
-                            '',
-                            true
-                          )
-                          new Notice(self._t('tip.changeSuccess'))
-                        })
+                        const ref = this.app.metadataCache.on(
+                          'changed',
+                          changedFile => {
+                            if (changedFile.path === renamedFile.path) {
+                              this.app.metadataCache.offref(ref)
+                              this.app.workspace.openLinkText(
+                                renamedFile.path,
+                                '',
+                                true
+                              )
+                              new Notice(self._t('tip.changeSuccess'))
+                            }
+                          }
+                        )
                       }
                     })
                 )
