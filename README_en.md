@@ -1,6 +1,6 @@
 【English | [简体中文](./README_zh.md)】
 
-# SimpleMindMap Obsidian Plugin
+# SimpleMindMap Plugin
 
 Provides a user-friendly mind map plugin for Obsidian.
 

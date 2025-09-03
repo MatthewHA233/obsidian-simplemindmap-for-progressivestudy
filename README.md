@@ -1,6 +1,6 @@
 【[English](./README_en.md) | 简体中文】
 
-# SimpleMindMap Obsidian 插件
+# SimpleMindMap 插件
 
 为 Obsidian 提供一个好用的思维导图插件。
 

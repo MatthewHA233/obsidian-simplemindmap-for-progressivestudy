@@ -62,6 +62,7 @@ class SmmEditView extends TextFileView {
     this.savingTipEl = null
     this.isReadonlyMode = false
     this.toggleReadonlyButton = null
+    this.popScope = null
   }
 
   // 获取视图类型
@@ -130,6 +131,9 @@ class SmmEditView extends TextFileView {
         }
       })
     }
+
+    // 注册热键覆盖
+    this._registerHotkeyOverrides()
   }
 
   // 获取视图数据（保存到文件）
@@ -155,9 +159,8 @@ class SmmEditView extends TextFileView {
         this.parsedMindMapData = parseMarkdownText(rawData)
         const content = this.parsedMindMapData.metadata.content
         if (content) {
-          this.parsedMindMapData.metadata.content = LZString.decompressFromBase64(
-            content
-          )
+          this.parsedMindMapData.metadata.content =
+            LZString.decompressFromBase64(content)
         } else {
           throw new Error('文件格式错误')
         }
@@ -521,6 +524,8 @@ class SmmEditView extends TextFileView {
     const nowActive = leaf?.view === this
     if (nowActive && !this.isActive) {
       // 标签被激活
+      // 注册热键覆盖
+      this._registerHotkeyOverrides()
       this.isActive = true
       // 激活后刷新视图
       if (this.mindMapAPP) {
@@ -540,6 +545,8 @@ class SmmEditView extends TextFileView {
       }
     } else if (!nowActive && this.isActive) {
       // 标签失去激活
+      // 清理热键覆盖
+      this._clearPopScope()
       const rect = this.warpEl.getBoundingClientRect()
       this.isHidden = rect.width === 0 || rect.height === 0
       if (this.mindMapAPP) {
@@ -596,6 +603,7 @@ class SmmEditView extends TextFileView {
   }
 
   async onClose() {
+    this._clearPopScope()
     await this.save() // 手动保存
     this.clear()
     this.saveButton = null
@@ -841,6 +849,38 @@ class SmmEditView extends TextFileView {
         return [activeFileDirectory, subFolder].filter(Boolean).join('/')
       default:
         return ''
+    }
+  }
+
+  // 清理之前的热键覆盖
+  _clearPopScope() {
+    if (this.popScope) {
+      this.popScope()
+      this.popScope = null
+    }
+  }
+
+  // 注册热键覆盖
+  _registerHotkeyOverrides() {
+    this._clearPopScope()
+    const scope = this.app.keymap.getRootScope()
+    const ctrlFHandler = scope.register(['Mod'], 'f', evt => {
+      evt.preventDefault()
+      return true
+    })
+    const ctrlSHandler = scope.register(['Mod'], 's', evt => {
+      evt.preventDefault()
+      const view = this.plugin._getActiveSmmView()
+      if (view) {
+        view.forceSave()
+      }
+      return true
+    })
+    scope.keys.unshift(scope.keys.pop())
+    scope.keys.unshift(scope.keys.pop())
+    this.popScope = () => {
+      scope.unregister(ctrlFHandler)
+      scope.unregister(ctrlSHandler)
     }
   }
 }

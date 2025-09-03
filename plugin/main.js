@@ -328,6 +328,11 @@ export default class SimpleMindMapPlugin extends Plugin {
     })
   }
 
+  // 获取当前激活的思维导图视图
+  _getActiveSmmView() {
+    return this.app.workspace.getActiveViewOfType(SmmEditView, IGNORE_CHECK_SMM)
+  }
+
   // 判断文件是否为思维导图
   _isSmmFile(file) {
     if (!file) {
