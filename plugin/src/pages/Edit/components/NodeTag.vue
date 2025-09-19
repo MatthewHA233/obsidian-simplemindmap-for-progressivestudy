@@ -118,6 +118,7 @@ export default {
     },
 
     handleShowNodeTag() {
+      if (this.activeNodes.length === 0) return
       this.$root.$bus.$emit('startTextEdit')
       this.dialogVisible = true
     },

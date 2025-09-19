@@ -15,6 +15,7 @@
           </div>
         </div>
       </div>
+      <div class="tip">{{ $t('shortcutKey.tip') }}</div>
     </div>
   </Sidebar>
 </template>
@@ -114,6 +115,13 @@ export default {
         text-overflow: ellipsis;
       }
     }
+  }
+
+  .tip {
+    font-size: 14px;
+    color: #909090;
+    margin-top: 20px;
+    margin-bottom: 12px;
   }
 }
 </style>

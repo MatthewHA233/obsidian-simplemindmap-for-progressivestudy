@@ -120,6 +120,7 @@ export default {
 
     // 显示节点图片设置对话框
     handleShowNodeImage() {
+      if (!this.activeNodes || this.activeNodes.length === 0) return
       this.reset()
       this.getObFileList()
       if (this.activeNodes.length > 0) {

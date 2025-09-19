@@ -206,122 +206,17 @@ export const backgroundSizeList = [
 // 快捷键列表
 export const shortcutKeyList = [
   {
-    type: 'Obsidian specific',
-    list: [
-      {
-        icon: 'iconbaocun',
-        name: 'Save and update image data',
-        value: `${ctrl} + Shfit + S`
-      },
-      {
-        icon: 'iconxinbiaoqianyedakai',
-        name: 'New tab opens hyperlink',
-        value: `${ctrl} + Left key`
-      }
-    ]
-  },
-  {
     type: 'Node operation',
     list: [
-      {
-        icon: 'icontianjiazijiedian',
-        name: 'Inert child node',
-        value: 'Tab | Insert'
-      },
-      {
-        icon: 'iconjiedian',
-        name: 'Insert sibling node',
-        value: enter
-      },
-      {
-        icon: 'icondodeparent',
-        name: 'Insert parent node',
-        value: 'Shift + Tab'
-      },
-      {
-        icon: 'iconshangyi',
-        name: 'Move up node',
-        value: `${ctrl} + ↑`
-      },
-      {
-        icon: 'iconxiayi',
-        name: 'Move down node',
-        value: `${ctrl} + ↓`
-      },
-      {
-        icon: 'icongaikuozonglan',
-        name: 'Insert summary',
-        value: `${ctrl} + G`
-      },
-      {
-        icon: 'iconzhankai',
-        name: 'Expand/UnExpand node',
-        value: '/'
-      },
-      {
-        icon: 'iconshanchu',
-        name: 'Delete node',
-        value: 'Delete | Backspace'
-      },
-      {
-        icon: 'iconshanchu',
-        name: 'Delete current node',
-        value: 'Shift + Backspace'
-      },
-      {
-        icon: 'iconfuzhi',
-        name: 'Copy node',
-        value: `${ctrl} + C`
-      },
-      {
-        icon: 'iconjianqie',
-        name: 'Cut node',
-        value: `${ctrl} + X`
-      },
-      {
-        icon: 'iconniantie',
-        name: 'Paste node',
-        value: `${ctrl} + V`
-      },
-      {
-        icon: 'iconbianji',
-        name: 'Edit node',
-        value: macFn + 'F2'
-      },
       {
         icon: 'iconhuanhang',
         name: 'Text Wrap',
         value: `Shift + ${enter}`
       },
       {
-        icon: 'iconhoutui-shi',
-        name: 'Undo',
-        value: `${ctrl} + Z`
-      },
-      {
-        icon: 'iconqianjin1',
-        name: 'Redo',
-        value: `${ctrl} + Y`
-      },
-      {
-        icon: 'iconquanxuan',
-        name: 'Select All',
-        value: `${ctrl} + A`
-      },
-      {
         icon: 'iconquanxuan',
         name: 'Multiple choice',
         value: `Right click / ${ctrl} + Left click`
-      },
-      {
-        icon: 'iconzhengli',
-        name: 'Arrange layout',
-        value: `${ctrl} + R`
-      },
-      {
-        icon: 'iconsousuo',
-        name: 'Search and Replace',
-        value: `${ctrl} + F`
       }
     ]
   },
@@ -330,28 +225,8 @@ export const shortcutKeyList = [
     list: [
       {
         icon: 'iconfangda',
-        name: 'Zoom in',
-        value: `${ctrl} + +`
-      },
-      {
-        icon: 'iconsuoxiao',
-        name: 'Zoom out',
-        value: `${ctrl} + -`
-      },
-      {
-        icon: 'iconfangda',
         name: 'Zoom in/Zoom out',
         value: `${ctrl} + Mouse wheel`
-      },
-      {
-        icon: 'icondingwei',
-        name: 'Back root node',
-        value: `${ctrl} + ${enter}`
-      },
-      {
-        icon: 'iconquanping1',
-        name: 'Fit canvas',
-        value: `${ctrl} + i`
       },
       {
         icon: 'iconshubiaoyidong',

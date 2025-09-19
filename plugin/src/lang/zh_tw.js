@@ -292,7 +292,8 @@ export default {
     zoomOut: '縮小'
   },
   shortcutKey: {
-    title: '快速鍵'
+    title: '快速鍵',
+    tip: '其他操作請通過命令，也可自行設定命令的快速鍵'
   },
   strusture: {
     title: '結構'

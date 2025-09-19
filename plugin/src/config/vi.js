@@ -210,122 +210,17 @@ const macFn = isMac ? 'fn + ' : ''
 // Danh sách phím tắt
 export const shortcutKeyList = [
   {
-    type: 'Obsidian đặc biệt',
-    list: [
-      {
-        icon: 'iconbaocun',
-        name: 'Lưu và cập nhật dữ liệu hình ảnh',
-        value: `${ctrl} + Shfit + S`
-      },
-      {
-        icon: 'iconxinbiaoqianyedakai',
-        name: 'Trang nhãn mới Mở siêu kết nối',
-        value: `${ctrl} + Trái`
-      }
-    ]
-  },
-  {
     type: 'Hoạt động nút',
     list: [
-      {
-        icon: 'icontianjiazijiedian',
-        name: 'Chèn nút thấp hơn',
-        value: 'Tab | Insert'
-      },
-      {
-        icon: 'iconjiedian',
-        name: 'Chèn nút ngang hàng',
-        value: enter
-      },
-      {
-        icon: 'icondodeparent',
-        name: 'Chèn nút cha',
-        value: 'Shift + Tab'
-      },
-      {
-        icon: 'iconshangyi',
-        name: 'Chuyển nút lên',
-        value: `${ctrl} + ↑`
-      },
-      {
-        icon: 'iconxiayi',
-        name: 'Di chuyển nút xuống',
-        value: `${ctrl} + ↓`
-      },
-      {
-        icon: 'icongaikuozonglan',
-        name: 'Chèn tóm tắt',
-        value: `${ctrl} + G`
-      },
-      {
-        icon: 'iconzhankai',
-        name: 'Mở rộng/thu gọn các nút',
-        value: '/'
-      },
-      {
-        icon: 'iconshanchu',
-        name: 'Xóa nút',
-        value: 'Delete | Backspace'
-      },
-      {
-        icon: 'iconshanchu',
-        name: 'Chỉ xóa nút hiện tại',
-        value: 'Shift + Backspace'
-      },
-      {
-        icon: 'iconfuzhi',
-        name: 'Sao chép nút',
-        value: `${ctrl} + C`
-      },
-      {
-        icon: 'iconjianqie',
-        name: 'Cắt nút',
-        value: `${ctrl} + X`
-      },
-      {
-        icon: 'iconniantie',
-        name: 'Dán nút',
-        value: `${ctrl} + V`
-      },
-      {
-        icon: 'iconbianji',
-        name: 'Sửa nút',
-        value: macFn + 'F2'
-      },
       {
         icon: 'iconhuanhang',
         name: 'Dòng mới',
         value: `Shift + ${enter}`
       },
       {
-        icon: 'iconhoutui-shi',
-        name: 'Lùi lại',
-        value: `${ctrl} + Z`
-      },
-      {
-        icon: 'iconqianjin1',
-        name: 'Tiến lên!',
-        value: `${ctrl} + Y`
-      },
-      {
-        icon: 'iconquanxuan',
-        name: 'Chọn tất cả',
-        value: `${ctrl} + A`
-      },
-      {
         icon: 'iconquanxuan',
         name: 'Nhiều lựa chọn',
         value: `Phải / ${ctrl} + Trái`
-      },
-      {
-        icon: 'iconzhengli',
-        name: 'Name',
-        value: `${ctrl} + R`
-      },
-      {
-        icon: 'iconsousuo',
-        name: 'Tìm kiếm và thay thế',
-        value: `${ctrl} + F`
       }
     ]
   },
@@ -334,28 +229,8 @@ export const shortcutKeyList = [
     list: [
       {
         icon: 'iconfangda',
-        name: 'Phóng to',
-        value: `${ctrl} + +`
-      },
-      {
-        icon: 'iconsuoxiao',
-        name: 'Thu nhỏ',
-        value: `${ctrl} + -`
-      },
-      {
-        icon: 'iconfangda',
         name: 'Phóng to/Thu nhỏ',
         value: `${ctrl} + Cuộn chuột`
-      },
-      {
-        icon: 'icondingwei',
-        name: 'Trở lại Root Node',
-        value: `${ctrl} + ${enter}`
-      },
-      {
-        icon: 'iconquanping1',
-        name: 'Thích nghi với Canvas',
-        value: `${ctrl} + i`
       },
       {
         icon: 'iconshubiaoyidong',

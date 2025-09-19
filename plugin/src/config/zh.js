@@ -272,122 +272,17 @@ const macFn = isMac ? 'fn + ' : ''
 // 快捷键列表
 export const shortcutKeyList = [
   {
-    type: 'Obsidian特有',
-    list: [
-      {
-        icon: 'iconbaocun',
-        name: '保存并更新图像数据',
-        value: `${ctrl} + Shfit + S`
-      },
-      {
-        icon: 'iconxinbiaoqianyedakai',
-        name: '新标签页打开超链接',
-        value: `${ctrl} + 左键`
-      }
-    ]
-  },
-  {
     type: '节点操作',
     list: [
-      {
-        icon: 'icontianjiazijiedian',
-        name: '插入下级节点',
-        value: 'Tab | Insert'
-      },
-      {
-        icon: 'iconjiedian',
-        name: '插入同级节点',
-        value: enter
-      },
-      {
-        icon: 'icondodeparent',
-        name: '插入父节点',
-        value: 'Shift + Tab'
-      },
-      {
-        icon: 'iconshangyi',
-        name: '上移节点',
-        value: `${ctrl} + ↑`
-      },
-      {
-        icon: 'iconxiayi',
-        name: '下移节点',
-        value: `${ctrl} + ↓`
-      },
-      {
-        icon: 'icongaiyao',
-        name: '插入概要',
-        value: `${ctrl} + G`
-      },
-      {
-        icon: 'iconzhankai',
-        name: '展开/收起节点',
-        value: '/'
-      },
-      {
-        icon: 'iconshanchu',
-        name: '删除节点',
-        value: 'Delete | Backspace'
-      },
-      {
-        icon: 'iconshanchu',
-        name: '仅删除当前节点',
-        value: 'Shift + Backspace'
-      },
-      {
-        icon: 'iconfuzhi',
-        name: '复制节点',
-        value: `${ctrl} + C`
-      },
-      {
-        icon: 'iconjianqie',
-        name: '剪切节点',
-        value: `${ctrl} + X`
-      },
-      {
-        icon: 'iconniantie',
-        name: '粘贴节点',
-        value: `${ctrl} + V`
-      },
-      {
-        icon: 'iconbianji',
-        name: '编辑节点',
-        value: macFn + 'F2'
-      },
       {
         icon: 'iconhuanhang',
         name: '文本换行',
         value: `Shift + ${enter}`
       },
       {
-        icon: 'iconhoutui-shi',
-        name: '回退',
-        value: `${ctrl} + Z`
-      },
-      {
-        icon: 'iconqianjin1',
-        name: '前进',
-        value: `${ctrl} + Y`
-      },
-      {
-        icon: 'iconquanxuan',
-        name: '全选',
-        value: `${ctrl} + A`
-      },
-      {
         icon: 'iconquanxuan',
         name: '多选',
         value: `右键 / ${ctrl} + 左键`
-      },
-      {
-        icon: 'iconzhengli',
-        name: '一键整理布局',
-        value: `${ctrl} + R`
-      },
-      {
-        icon: 'iconsousuo',
-        name: '搜索和替换',
-        value: `${ctrl} + F`
       }
     ]
   },
@@ -396,28 +291,8 @@ export const shortcutKeyList = [
     list: [
       {
         icon: 'iconfangda',
-        name: '放大',
-        value: `${ctrl} + +`
-      },
-      {
-        icon: 'iconsuoxiao',
-        name: '缩小',
-        value: `${ctrl} + -`
-      },
-      {
-        icon: 'iconfangda',
         name: '放大/缩小',
         value: `${ctrl} + 鼠标滚动`
-      },
-      {
-        icon: 'icondingwei',
-        name: '回到根节点',
-        value: `${ctrl} + ${enter}`
-      },
-      {
-        icon: 'iconquanping1',
-        name: '适应画布',
-        value: `${ctrl} + i`
       },
       {
         icon: 'iconshubiaoyidong',

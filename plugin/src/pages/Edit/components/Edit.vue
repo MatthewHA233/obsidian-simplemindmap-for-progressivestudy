@@ -247,6 +247,27 @@ export default {
     this.$root.$bus.$on('obTabDeactivate', this.onObTabDeactivate)
     this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
     this.$root.$bus.$on('jumpToNodeByUid', this.jumpToNodeByUid)
+    this.$root.$bus.$on('toggleActiveExpand', this.toggleActiveExpand)
+    this.$root.$bus.$on('copyNode', this.copyNode)
+    this.$root.$bus.$on('cutNode', this.cutNode)
+    this.$root.$bus.$on('pasteNode', this.pasteNode)
+    this.$root.$bus.$on('canvasZoomIn', this.canvasZoomIn)
+    this.$root.$bus.$on('canvasZoomOut', this.canvasZoomOut)
+    this.$root.$bus.$on('canvasBackToRoot', this.canvasBackToRoot)
+    this.$root.$bus.$on('canvasZoomFit', this.canvasZoomFit)
+    this.$root.$bus.$on('toggleBold', this.toggleBold)
+    this.$root.$bus.$on('toggleItalic', this.toggleItalic)
+    this.$root.$bus.$on('toggleUnderline', this.toggleUnderline)
+    this.$root.$bus.$on('toggleStrikethrough', this.toggleStrikethrough)
+    this.$root.$bus.$on('increaseFontSize', this.increaseFontSize)
+    this.$root.$bus.$on('decreaseFontSize', this.decreaseFontSize)
+    this.$root.$bus.$on('canvasActivateLeftNode', this.canvasActivateLeftNode)
+    this.$root.$bus.$on('canvasActivateRightNode', this.canvasActivateRightNode)
+    this.$root.$bus.$on(
+      'canvasActivateBottomNode',
+      this.canvasActivateBottomNode
+    )
+    this.$root.$bus.$on('canvasActivateTopNode', this.canvasActivateTopNode)
   },
   beforeDestroy() {
     this.$root.$bus.$off('execCommand', this.execCommand)
@@ -275,6 +296,30 @@ export default {
     this.$root.$bus.$off('obTabDeactivate', this.onObTabDeactivate)
     this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
     this.$root.$bus.$off('jumpToNodeByUid', this.jumpToNodeByUid)
+    this.$root.$bus.$off('toggleActiveExpand', this.toggleActiveExpand)
+    this.$root.$bus.$off('copyNode', this.copyNode)
+    this.$root.$bus.$off('cutNode', this.cutNode)
+    this.$root.$bus.$off('pasteNode', this.pasteNode)
+    this.$root.$bus.$off('canvasZoomIn', this.canvasZoomIn)
+    this.$root.$bus.$off('canvasZoomOut', this.canvasZoomOut)
+    this.$root.$bus.$off('canvasBackToRoot', this.canvasBackToRoot)
+    this.$root.$bus.$off('canvasZoomFit', this.canvasZoomFit)
+    this.$root.$bus.$off('toggleBold', this.toggleBold)
+    this.$root.$bus.$off('toggleItalic', this.toggleItalic)
+    this.$root.$bus.$off('toggleUnderline', this.toggleUnderline)
+    this.$root.$bus.$off('toggleStrikethrough', this.toggleStrikethrough)
+    this.$root.$bus.$off('increaseFontSize', this.increaseFontSize)
+    this.$root.$bus.$off('decreaseFontSize', this.decreaseFontSize)
+    this.$root.$bus.$off('canvasActivateLeftNode', this.canvasActivateLeftNode)
+    this.$root.$bus.$off(
+      'canvasActivateRightNode',
+      this.canvasActivateRightNode
+    )
+    this.$root.$bus.$off(
+      'canvasActivateBottomNode',
+      this.canvasActivateBottomNode
+    )
+    this.$root.$bus.$off('canvasActivateTopNode', this.canvasActivateTopNode)
     clearTimeout(this.autoSaveTimer)
     clearTimeout(this.savingTimer)
     this.mindMap.destroy()
@@ -525,7 +570,8 @@ export default {
               style: {}
             }
           }
-        }
+        },
+        enableDefaultShortcutKeys: false
       })
       this.afterInitMindMap(this.tmpMindMap)
     },
@@ -1012,6 +1058,62 @@ export default {
         }
         node.setHyperlink(result.link, result.linkText || '')
       }
+    },
+
+    // 转发事件
+    toggleActiveExpand() {
+      this.mindMap.renderer.toggleActiveExpand()
+    },
+    copyNode() {
+      this.mindMap.renderer.copy()
+    },
+    cutNode() {
+      this.mindMap.renderer.cut()
+    },
+    pasteNode() {
+      this.mindMap.renderer.paste()
+    },
+    canvasZoomIn() {
+      this.mindMap.view.enlarge()
+    },
+    canvasZoomOut() {
+      this.mindMap.view.narrow()
+    },
+    canvasBackToRoot() {
+      this.mindMap.renderer.setRootNodeCenter()
+    },
+    canvasZoomFit() {
+      this.mindMap.view.fit()
+    },
+    toggleBold() {
+      this.mindMap.renderer.toggleNodeBold()
+    },
+    toggleItalic() {
+      this.mindMap.renderer.toggleNodeItalic()
+    },
+    toggleUnderline() {
+      this.mindMap.renderer.toggleNodeUnderline()
+    },
+    toggleStrikethrough() {
+      this.mindMap.renderer.toggleNodeLineThrough()
+    },
+    increaseFontSize() {
+      this.mindMap.renderer.increaseNodeFontSize()
+    },
+    decreaseFontSize() {
+      this.mindMap.renderer.decreaseNodeFontSize()
+    },
+    canvasActivateLeftNode() {
+      this.mindMap.keyboardNavigation.onLeftKeyUp()
+    },
+    canvasActivateRightNode() {
+      this.mindMap.keyboardNavigation.onRightKeyUp()
+    },
+    canvasActivateBottomNode() {
+      this.mindMap.keyboardNavigation.onDownKeyUp()
+    },
+    canvasActivateTopNode() {
+      this.mindMap.keyboardNavigation.onUpKeyUp()
     }
   }
 }

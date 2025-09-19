@@ -10,6 +10,10 @@ mind-map 也提供了独立的思维导图客户端，可以点击[客户端](ht
 
 # 功能清单
 
+- 快捷键
+
+  从`0.1.5+`开始，插件不再提供默认的快捷键，全部转为ob的命令，你可以自行设置命令对应的快捷键。该[文档](./ShortcutKeySettingReference.md)列出了原来的快捷键，可供参考。
+
 - 思维导图本身的功能可从[mind-map](https://github.com/wanglin2/mind-map)项目了解更多，也可以在这里查[看常见问题](./Help_zh.md)。
 
 - 思维导图文件格式

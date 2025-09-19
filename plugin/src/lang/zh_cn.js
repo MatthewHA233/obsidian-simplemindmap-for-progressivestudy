@@ -291,7 +291,8 @@ export default {
     zoomOut: '缩小'
   },
   shortcutKey: {
-    title: '快捷键'
+    title: '快捷键',
+    tip: '其他操作请通过命令，也可自行设置命令的快捷键'
   },
   strusture: {
     title: '结构'

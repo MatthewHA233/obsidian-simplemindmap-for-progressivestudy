@@ -10,6 +10,10 @@ mind-map also provides a standalone mind map client. Learn more about the [Clien
 
 # Feature List
 
+- Shortcuts
+
+  Starting from '0.1.5+', the plugin no longer provides default shortcut keys, all are converted to ob commands, and you can set the corresponding shortcut keys for the commands yourself. This [document](./ShortcutKeySettingReference_en.md) lists the original shortcut keys for reference.
+
 - For mind map features, refer to the [mind-map](https://github.com/wanglin2/mind-map) project. You can also check [Common Issues](./Help.md) here.
 
 - Mind Map File Format  

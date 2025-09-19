@@ -1,5 +1,16 @@
 # FAQ/Help
 
+> The Ctrl key mentioned in this document corresponds to the Command key on Mac systems.
+
+- Open a hyperlink in a new tab  
+  Ctrl + click the hyperlink.
+
+- When the left button is set to frame-select nodes and the right button is used to drag the canvas, can the left button still be used to drag the canvas?  
+  Yes, hold down the Space key and use the left button to drag the canvas.
+
+- When the mouse wheel behavior is set to 【Move view up and down】, how can the mouse wheel be used to zoom the canvas?  
+  Hold down the Ctrl key and use the mouse wheel to zoom the canvas.
+
 - **Is free node supported?**  
   No.
 
@@ -22,8 +33,7 @@
 
 - **How to edit node text?**  
   1. Double-click the node.  
-  2. Press `F2`.  
-  3. Activate node + press any letter/number key.  
+  2. Activate node + press any letter/number key.  
 
 - **How to select multiple nodes?**  
   1. Set selection mode in bottom toolbar:  
@@ -36,6 +46,7 @@
   1. Use the mouse button assigned in toolbar settings.  
   2. In *Left-box-select* mode: Hold `Space` + Left-drag.  
   3. Set *Mouse Wheel Behavior* to *Move view up/down* in Settings.  
+  4. Hold down the Shift key while using the mouse wheel to move the canvas left and right.
 
 - **How to adjust node width?**  
   Drag node edges → Release to confirm.  

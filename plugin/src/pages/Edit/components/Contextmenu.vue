@@ -13,7 +13,7 @@
         :class="{ disabled: insertNodeBtnDisabled }"
       >
         <span class="name">{{ $t('contextmenu.insertSiblingNode') }}</span>
-        <span class="desc">Enter</span>
+        <span class="desc"></span>
       </div>
       <div
         class="item"
@@ -21,7 +21,7 @@
         :class="{ disabled: isGeneralization }"
       >
         <span class="name">{{ $t('contextmenu.insertChildNode') }}</span>
-        <span class="desc">Tab</span>
+        <span class="desc"></span>
       </div>
       <div
         class="item"
@@ -29,7 +29,7 @@
         :class="{ disabled: insertNodeBtnDisabled }"
       >
         <span class="name">{{ $t('contextmenu.insertParentNode') }}</span>
-        <span class="desc">Shift + Tab</span>
+        <span class="desc"></span>
       </div>
       <div
         class="item"
@@ -37,7 +37,7 @@
         :class="{ disabled: insertNodeBtnDisabled }"
       >
         <span class="name">{{ $t('contextmenu.insertSummary') }}</span>
-        <span class="desc">Ctrl + G</span>
+        <span class="desc"></span>
       </div>
       <div class="splitLine"></div>
       <div
@@ -46,7 +46,7 @@
         :class="{ disabled: upNodeBtnDisabled }"
       >
         <span class="name">{{ $t('contextmenu.moveUpNode') }}</span>
-        <span class="desc">Ctrl + ↑</span>
+        <span class="desc"></span>
       </div>
       <div
         class="item"
@@ -54,7 +54,7 @@
         :class="{ disabled: downNodeBtnDisabled }"
       >
         <span class="name">{{ $t('contextmenu.moveDownNode') }}</span>
-        <span class="desc">Ctrl + ↓</span>
+        <span class="desc"></span>
       </div>
       <div class="item" @click="exec('UNEXPAND_ALL')">
         <span class="name">{{ $t('contextmenu.unExpandNodeChild') }}</span>
@@ -65,11 +65,11 @@
       <div class="splitLine"></div>
       <div class="item danger" @click="exec('REMOVE_NODE')">
         <span class="name">{{ $t('contextmenu.deleteNode') }}</span>
-        <span class="desc">Delete</span>
+        <span class="desc"></span>
       </div>
       <div class="item danger" @click="exec('REMOVE_CURRENT_NODE')">
         <span class="name">{{ $t('contextmenu.deleteCurrentNode') }}</span>
-        <span class="desc">Shift + Backspace</span>
+        <span class="desc"></span>
       </div>
       <div class="splitLine"></div>
       <div
@@ -78,7 +78,7 @@
         :class="{ disabled: isGeneralization }"
       >
         <span class="name">{{ $t('contextmenu.copyNode') }}</span>
-        <span class="desc">Ctrl + C</span>
+        <span class="desc"></span>
       </div>
       <div
         class="item"
@@ -86,11 +86,11 @@
         :class="{ disabled: isGeneralization }"
       >
         <span class="name">{{ $t('contextmenu.cutNode') }}</span>
-        <span class="desc">Ctrl + X</span>
+        <span class="desc"></span>
       </div>
       <div class="item" @click="exec('PASTE_NODE')">
         <span class="name">{{ $t('contextmenu.pasteNode') }}</span>
-        <span class="desc">Ctrl + V</span>
+        <span class="desc"></span>
       </div>
       <div class="splitLine"></div>
       <div class="item" @click="exec('REMOVE_HYPERLINK')" v-if="hasHyperlink">
@@ -134,7 +134,7 @@
     <template v-if="type === 'svg'">
       <div class="item" @click="exec('RETURN_CENTER')">
         <span class="name">{{ $t('contextmenu.backCenter') }}</span>
-        <span class="desc">Ctrl + Enter</span>
+        <span class="desc"></span>
       </div>
       <div class="splitLine"></div>
       <div class="item" @click="exec('EXPAND_ALL')">
@@ -166,11 +166,11 @@
       <div class="splitLine"></div>
       <div class="item" @click="exec('RESET_LAYOUT')" v-if="!isReadonly">
         <span class="name">{{ $t('contextmenu.arrangeLayout') }}</span>
-        <span class="desc">Ctrl + R</span>
+        <span class="desc"></span>
       </div>
       <div class="item" @click="exec('FIT_CANVAS')">
         <span class="name">{{ $t('contextmenu.fitCanvas') }}</span>
-        <span class="desc">Ctrl + i</span>
+        <span class="desc"></span>
       </div>
       <div class="item" @click="exec('TOGGLE_ZEN_MODE')">
         <span class="name">{{ $t('contextmenu.zenMode') }}</span>

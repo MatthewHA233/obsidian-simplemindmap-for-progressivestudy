@@ -169,6 +169,7 @@ export default {
     },
 
     handleShowNodeLink() {
+      if (!this.activeNodes || this.activeNodes.length === 0) return
       if (this.activeNodes.length > 0) {
         const firstNode = this.activeNodes[0]
         const link = firstNode.getData('hyperlink') || ''

@@ -206,122 +206,17 @@ export const backgroundSizeList = [
 // 快捷鍵列表
 export const shortcutKeyList = [
   {
-    type: 'Obsidian特有',
-    list: [
-      {
-        icon: 'iconbaocun',
-        name: '保存並更新影像數據',
-        value: `${ctrl} + Shfit + S`
-      },
-      {
-        icon: 'iconxinbiaoqianyedakai',
-        name: '新標籤頁打開超連結',
-        value: `${ctrl} + 左鍵`
-      }
-    ]
-  },
-  {
     type: '節點操作',
     list: [
-      {
-        icon: 'icontianjiazijiedian',
-        name: '插入子節點',
-        value: 'Tab | Insert'
-      },
-      {
-        icon: 'iconjiedian',
-        name: '插入同層節點',
-        value: enter
-      },
-      {
-        icon: 'icondodeparent',
-        name: '插入父節點',
-        value: 'Shift + Tab'
-      },
-      {
-        icon: 'iconshangyi',
-        name: '上移節點',
-        value: `${ctrl} + ↑`
-      },
-      {
-        icon: 'iconxiayi',
-        name: '下移節點',
-        value: `${ctrl} + ↓`
-      },
-      {
-        icon: 'icongaikuozonglan',
-        name: '插入摘要',
-        value: `${ctrl} + G`
-      },
-      {
-        icon: 'iconzhankai',
-        name: '展開／收合節點',
-        value: '/'
-      },
-      {
-        icon: 'iconshanchu',
-        name: '刪除節點',
-        value: 'Delete | Backspace'
-      },
-      {
-        icon: 'iconshanchu',
-        name: '僅刪除目前節點',
-        value: 'Shift + Backspace'
-      },
-      {
-        icon: 'iconfuzhi',
-        name: '複製節點',
-        value: `${ctrl} + C`
-      },
-      {
-        icon: 'iconjianqie',
-        name: '剪下節點',
-        value: `${ctrl} + X`
-      },
-      {
-        icon: 'iconniantie',
-        name: '貼上節點',
-        value: `${ctrl} + V`
-      },
-      {
-        icon: 'iconbianji',
-        name: '編輯節點',
-        value: macFn + 'F2'
-      },
       {
         icon: 'iconhuanhang',
         name: '文字換行',
         value: `Shift + ${enter}`
       },
       {
-        icon: 'iconhoutui-shi',
-        name: '復原',
-        value: `${ctrl} + Z`
-      },
-      {
-        icon: 'iconqianjin1',
-        name: '重做',
-        value: `${ctrl} + Y`
-      },
-      {
-        icon: 'iconquanxuan',
-        name: '全選',
-        value: `${ctrl} + A`
-      },
-      {
         icon: 'iconquanxuan',
         name: '多重選擇',
         value: `右鍵 / ${ctrl} + 左鍵`
-      },
-      {
-        icon: 'iconzhengli',
-        name: '一鍵整理版面配置',
-        value: `${ctrl} + R`
-      },
-      {
-        icon: 'iconsousuo',
-        name: '搜尋與取代',
-        value: `${ctrl} + F`
       }
     ]
   },
@@ -330,28 +225,8 @@ export const shortcutKeyList = [
     list: [
       {
         icon: 'iconfangda',
-        name: '放大',
-        value: `${ctrl} + +`
-      },
-      {
-        icon: 'iconsuoxiao',
-        name: '縮小',
-        value: `${ctrl} + -`
-      },
-      {
-        icon: 'iconfangda',
         name: '放大／縮小',
         value: `${ctrl} + 滑鼠滾輪`
-      },
-      {
-        icon: 'icondingwei',
-        name: '回到根節點',
-        value: `${ctrl} + ${enter}`
-      },
-      {
-        icon: 'iconquanping1',
-        name: '適應畫布',
-        value: `${ctrl} + i`
       },
       {
         icon: 'iconshubiaoyidong',

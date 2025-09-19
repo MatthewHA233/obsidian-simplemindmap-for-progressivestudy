@@ -297,7 +297,8 @@ export default {
     zoomOut: 'Zoom out'
   },
   shortcutKey: {
-    title: 'Shortcut key'
+    title: 'Shortcut key',
+    tip: 'For other operations, please use commands, or you can set shortcut keys for commands yourself'
   },
   strusture: {
     title: 'Strusture'

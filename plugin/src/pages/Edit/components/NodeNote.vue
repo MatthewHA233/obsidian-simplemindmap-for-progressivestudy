@@ -83,6 +83,7 @@ export default {
     },
 
     handleShowNodeNote(node) {
+      if (this.activeNodes.length === 0 && !node) return
       this.$root.$bus.$emit('startTextEdit')
       if (node) {
         this.appointNode = node

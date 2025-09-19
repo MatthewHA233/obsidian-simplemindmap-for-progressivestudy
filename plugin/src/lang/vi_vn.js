@@ -299,7 +299,8 @@ export default {
     zoomOut: 'Thu nhỏ'
   },
   shortcutKey: {
-    title: 'Phím tắt'
+    title: 'Phím tắt',
+    tip: 'Các thao tác khác xin vui lòng thông qua lệnh, cũng có thể đặt lối tắt cho lệnh của bạn'
   },
   strusture: {
     title: 'Cấu trúc'

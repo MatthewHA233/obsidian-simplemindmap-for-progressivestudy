@@ -122,7 +122,6 @@ export default {
       'search_match_node_list_change',
       this.onSearchMatchNodeListChange
     )
-    this.mindMap.keyCommand.addShortcut('Control+f', this.showSearch)
     this.$root.$bus.$on('windowResize', this.setSearchResultListHeight)
     this.$root.$bus.$on('setData', this.close)
   },
@@ -139,7 +138,6 @@ export default {
       'search_match_node_list_change',
       this.onSearchMatchNodeListChange
     )
-    this.mindMap.keyCommand.removeShortcut('Control+f', this.showSearch)
     this.$root.$bus.$off('windowResize', this.setSearchResultListHeight)
     this.$root.$bus.$off('setData', this.close)
   },
