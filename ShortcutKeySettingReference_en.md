@@ -90,6 +90,30 @@ Starting from version 0.1.5+, the plugin no longer provides default shortcuts. A
 
 `Ctrl + F`
 
+- Toggle Bold
+
+`Control+b`
+
+- Toggle Italic
+
+`Control+i`
+
+- Toggle Underline
+
+`Control+u`
+
+- Toggle Strikethrough
+
+`Control+[`
+
+- Increase Font Size
+
+`Control+Shift+=`
+
+- Decrease Font Size
+
+`Control+Shift+-`
+
 ## Canvas Operations
 
 - Zoom In  

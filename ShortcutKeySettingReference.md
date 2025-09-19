@@ -90,6 +90,30 @@
 
 `Ctrl + F`
 
+- 切换粗体
+
+`Control+b`
+
+- 切换斜体
+
+`Control+i`
+
+- 切换下划线
+
+`Control+u`
+
+- 切换删除线
+
+`Control+[`
+
+- 增大字号
+
+`Control+Shift+=`
+
+- 减小字号
+
+`Control+Shift+-`
+
 ## 画布操作
 
 - 放大
