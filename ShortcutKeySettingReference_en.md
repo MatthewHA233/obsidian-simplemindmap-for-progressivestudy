@@ -5,6 +5,8 @@ Starting from version 0.1.5+, the plugin no longer provides default shortcuts. A
 > In this document, the Ctrl key corresponds to the Command key on Mac systems.
 >
 > The `|` symbol in shortcuts indicates "or," while `+` indicates "and."
+>
+> Obsidian does not support setting individual keys as shortcuts, such as `Enter`, `Tab`, `Del`, etc. It is recommended to use composite keys, such as `Ctrl + Enter`.
 
 ## Editing Operations
 
