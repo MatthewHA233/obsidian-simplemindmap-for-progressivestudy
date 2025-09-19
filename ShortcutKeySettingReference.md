@@ -92,27 +92,27 @@
 
 - 切换粗体
 
-`Control+b`
+`Control + B`
 
 - 切换斜体
 
-`Control+i`
+`Control + I`
 
 - 切换下划线
 
-`Control+u`
+`Control + U`
 
 - 切换删除线
 
-`Control+[`
+`Control + [`
 
 - 增大字号
 
-`Control+Shift+=`
+`Control + Shift + =`
 
 - 减小字号
 
-`Control+Shift+-`
+`Control + Shift + -`
 
 ## 画布操作
 
@@ -130,4 +130,4 @@
 
 - 适应画布
 
-`Ctrl + I`
+`Ctrl + Shift + I`

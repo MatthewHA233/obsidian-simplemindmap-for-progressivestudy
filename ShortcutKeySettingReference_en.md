@@ -92,27 +92,27 @@ Starting from version 0.1.5+, the plugin no longer provides default shortcuts. A
 
 - Toggle Bold
 
-`Control+b`
+`Control + B`
 
 - Toggle Italic
 
-`Control+i`
+`Control + I`
 
 - Toggle Underline
 
-`Control+u`
+`Control + U`
 
 - Toggle Strikethrough
 
-`Control+[`
+`Control + [`
 
 - Increase Font Size
 
-`Control+Shift+=`
+`Control + Shift + =`
 
 - Decrease Font Size
 
-`Control+Shift+-`
+`Control + Shift + -`
 
 ## Canvas Operations
 
@@ -130,4 +130,4 @@ Starting from version 0.1.5+, the plugin no longer provides default shortcuts. A
 
 - Fit to Canvas  
 
-`Ctrl + I`
+`Ctrl + Shift + I`
