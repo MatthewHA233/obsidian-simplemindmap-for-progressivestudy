@@ -1,26 +1,26 @@
 {
   "common": {
-    "mindMap": "Mind Map",
-    "rootNodeDefaultText": "Root Node",
+    "mindMap": "Mind map",
+    "rootNodeDefaultText": "Root node",
     "secondNodeDefaultText": "Secondary node",
-    "branchNodeDefaultText": "Branch Topic"
+    "branchNodeDefaultText": "Branch node"
   },
   "action": {
-    "createMindMap": "Create New Mind Map",
-    "createMindMapInsertToMd": "Create Mind Map and Insert into Current Document",
-    "openAsMd": "Open as Markdown Document",
-    "openAsMindMap": "Open as Mind Map Document",
-    "changeToOutline": "Switch to Outline Mode",
-    "changeToMindMap": "Switch to Mind Map Mode",
-    "printOutline": "Print Outline",
+    "createMindMap": "Create new mind map",
+    "createMindMapInsertToMd": "Create new mind map and insert into current document",
+    "openAsMd": "Open as markdown document",
+    "openAsMindMap": "Open as mind map document",
+    "changeToOutline": "Switch to outline mode",
+    "changeToMindMap": "Switch to mind map mode",
+    "printOutline": "Print outline",
     "import": "Import",
     "export": "Export",
-    "insertCodeBlockToMd": "Insert Mind Map Code Block into Current Document",
-    "previewAsMindMap": "Preview as Mind Map",
-    "changeToReadonly": "Change to Readonly Mode",
-    "changeToEdit": "Change to Edit Mode",
-    "changeToMdFile": "Convert to Markdown Document",
-    "changeToMindMapFile": "Convert to Mind Map Document"
+    "insertCodeBlockToMd": "Insert mind map code block into current document",
+    "previewAsMindMap": "Preview as mind map",
+    "changeToReadonly": "Change to readonly mode",
+    "changeToEdit": "Change to edit mode",
+    "changeToMdFile": "Convert to markdown document",
+    "changeToMindMapFile": "Convert to mind map document"
   },
   "tip": {
     "fileExist": "File already exists",
@@ -46,41 +46,41 @@
     "title": {
       "title1": "Basic",
       "title2": "File",
-      "title3": "Image Compression",
+      "title3": "Image compression",
       "title4": "Embed",
       "title5": "Other"
     },
     "themeMode": {
-      "title": "Theme Mode",
+      "title": "Theme mode",
       "desc": "Dark and light color modes",
-      "option1": "Follow Obsidian",
-      "option2": "Light Mode",
-      "option3": "Dark Mode"
+      "option1": "Follow obsidian",
+      "option2": "Light mode",
+      "option3": "Dark mode"
     },
     "theme": {
       "title": "Default theme (light color)",
       "desc": "Default theme for creating a mind map file in light color mode",
       "title2": "Default theme (dark color)",
-      "desc2": "Default theme for creating a mind map file in dark mode"
+      "desc2": "Default theme for creating a mind map file in dark color mode"
     },
     "layout": {
-      "title": "Default Layout",
+      "title": "Default layout",
       "desc": "The default structure when creating a new mind map file"
     },
     "folder": {
-      "title4": "Mind Map File Storage Location",
+      "title4": "Mind map file storage location",
       "desc4": "Storage location for newly created SimpleMindMap files",
-      "title1": "Custom File Storage Directory",
+      "title1": "Custom file storage directory",
       "desc1": "Custom file storage directory, relative to vault root directory",
-      "title5": "Image Storage Location",
+      "title5": "Image storage location",
       "desc5": "Storage location for uploaded image files (node images, background images)",
-      "title2": "Custom Image Storage Directory",
+      "title2": "Custom image storage directory",
       "desc2": "Custom image storage directory, relative to vault root directory",
-      "title6": "Custom Subfolder",
+      "title6": "Custom subfolder",
       "desc6": "Custom subfolder, relative to current file's folder",
-      "title7": "File Storage Location",
+      "title7": "File storage location",
       "desc7": "Storage directory for local files selected in node hyperlinks",
-      "title3": "Custom File Storage Directory",
+      "title3": "Custom file storage directory",
       "desc3": "Custom file storage directory, relative to vault root directory",
       "option1": "Vault root directory",
       "option2": "Specified folder",
@@ -92,40 +92,40 @@
       "desc9": "After opening, the canvas position and zoom data will be saved in the file, so that the next time it is opened, it can be restored to the position and zoom state when it was closed last time. The disadvantage is that moving and scaling the canvas will cause file changes"
     },
     "compress": {
-      "title1": "Compress Images",
+      "title1": "Compress images",
       "desc1": "Whether to compress uploaded node images (locally selected images)",
-      "title2": "Maximum Compression Width",
+      "title2": "Maximum compression width",
       "desc2": "Set the maximum width after image compression",
-      "title3": "Maximum Compression Height",
+      "title3": "Maximum compression height",
       "desc3": "Set the maximum height after image compression",
-      "title4": "Image Quality",
+      "title4": "Image quality",
       "desc4": "The quality of compressed images is only valid for certain image formats, such as jpg",
-      "curValue": "Current Value",
-      "reset": "Reset to Default"
+      "curValue": "Current value",
+      "reset": "Reset to default"
     },
     "autoSave": {
-      "title": "Auto-save Interval",
+      "title": "Auto-save interval",
       "desc": "Inactivity time before auto-save (seconds)"
     },
     "codeBlock": {
-      "title": "Code Block Initial Height",
+      "title": "Code block initial height",
       "desc": "Initial height when embedding via smm code block (pixels)"
     },
     "linkInfo": {
-      "issues": "Bugs and Feature Requests",
+      "issues": "Bugs and feature requests",
       "desktop": "Download independent client",
       "community": "Community"
     },
     "embed": {
-      "title1": "Embed Preview Double Click to Open a New Window",
+      "title1": "Embed preview double click to open a new window",
       "desc1": "When embedding an MD document in format ![[]], double-click to preview the image and open the file in a new window",
-      "title2": "Embed Preview Background Transparent",
+      "title2": "Embed preview background transparent",
       "desc2": "Set whether the background of the embedded preview image is transparent"
     },
     "file": {
-      "title1": "New Mind Map File Name Prefix",
+      "title1": "New mind map file name prefix",
       "desc1": "Default naming format for new mind map files: Prefix + Space + Date Timestamp",
-      "title2": "Date Timestamp Format for New Mind Map Files",
+      "title2": "Date timestamp format for new mind map files",
       "desc2": "Default format: YYYY-MM-DD HH.mm.ss, Example: 2025-01-01 23.59.59. For details on format meaning and modification, refer to: https://day.js.org/docs/en/parse/string-format"
     },
     "button": {
