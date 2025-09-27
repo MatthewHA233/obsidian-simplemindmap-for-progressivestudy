@@ -53,7 +53,7 @@
     "themeMode": {
       "title": "Theme mode",
       "desc": "Dark and light color modes",
-      "option1": "Follow obsidian",
+      "option1": "Follow Obsidian",
       "option2": "Light mode",
       "option3": "Dark mode"
     },
