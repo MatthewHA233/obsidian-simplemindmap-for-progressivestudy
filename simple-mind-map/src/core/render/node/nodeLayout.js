@@ -111,6 +111,12 @@ function getNodeRect() {
       spaceCount++
     }
   }
+  // 卡片数量按钮
+  if (this._cardCountData) {
+    textContentWidth += this._cardCountData.width
+    textContentHeight = Math.max(textContentHeight, this._cardCountData.height)
+    spaceCount++
+  }
   // 备注
   if (this._noteData) {
     textContentWidth += this._noteData.width
@@ -415,6 +421,14 @@ function layout() {
       textContentNested.add(tagNested)
       textContentOffsetX += tagLeft
     }
+  }
+  // 卡片数量按钮
+  if (this._cardCountData) {
+    this._cardCountData.node
+      .x(textContentOffsetX)
+      .y((textContentHeight - this._cardCountData.height) / 2)
+    textContentNested.add(this._cardCountData.node)
+    textContentOffsetX += this._cardCountData.width + textContentMargin
   }
   // 备注
   if (this._noteData) {
