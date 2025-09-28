@@ -86,6 +86,7 @@ class MindMapNode {
     this.noteEl = null
     this.noteContentIsShow = false
     this._attachmentData = null
+    this._cardCountData = null
     this._prefixData = null
     this._postfixData = null
     this._expandBtn = null
@@ -228,6 +229,7 @@ class MindMapNode {
       'text',
       'hyperlink',
       'tag',
+      'cardCount',
       'note',
       'attachment',
       'prefix',
@@ -270,6 +272,7 @@ class MindMapNode {
     if (createTypes.text) this._textData = this.createTextNode()
     if (createTypes.hyperlink) this._hyperlinkData = this.createHyperlinkNode()
     if (createTypes.tag) this._tagData = this.createTagNode()
+    if (createTypes.cardCount) this._cardCountData = this.createCardCountNode()
     if (createTypes.note) this._noteData = this.createNoteNode()
     if (createTypes.attachment)
       this._attachmentData = this.createAttachmentNode()
@@ -497,7 +500,6 @@ class MindMapNode {
         if (this._expandBtn && childrenLength <= 0) {
           this.removeExpandBtn()
         } else {
-          // 更新展开收起按钮
           this.renderExpandBtn()
         }
       } else {
@@ -539,6 +541,9 @@ class MindMapNode {
     if (this.left !== t.translateX || this.top !== t.translateY) {
       this.group.translate(this.left - t.translateX, this.top - t.translateY)
     }
+
+    // 恢复卡片笔记显示状态
+    this.restoreCardNoteState()
   }
 
   // 获取节点相当于画布的位置
@@ -909,7 +914,8 @@ class MindMapNode {
       childNode.getStyle('lineColor', true)
     const dasharray =
       childNode[getName]('lineDasharray') ||
-      childNode.getStyle('lineDasharray', true)
+      childNode.getStyle('lineDasharray', true) ||
+''
     this.style.line(
       line,
       {
@@ -1139,6 +1145,252 @@ class MindMapNode {
   // 获取子节点的数量
   getChildrenLength() {
     return this.nodeData.children ? this.nodeData.children.length : 0
+  }
+
+  // 卡片笔记子节点管理
+  toggleCardNoteNodes() {
+    const cardData = (this.nodeData.data && this.nodeData.data.cardNotes) || []
+
+    if (this._cardNoteNodesVisible) {
+      // 隐藏卡片笔记节点
+      this.hideCardNoteNodes()
+    } else {
+      // 显示卡片笔记节点
+      this.showCardNoteNodes(cardData)
+    }
+  }
+
+  showCardNoteNodes(cardData) {
+    this._cardNoteNodesVisible = true
+    this._cardNoteElements = []
+
+    // 创建独立的卡片笔记元素（不使用常规节点系统）
+    cardData.forEach((card, index) => {
+      const cardElement = this.createCardNoteElement(card, index)
+      this._cardNoteElements.push(cardElement)
+      this.group.add(cardElement.group)
+    })
+
+    // 立即布局，使用 requestAnimationFrame 确保渲染完成
+    requestAnimationFrame(() => {
+      this.layoutCardNoteElements()
+    })
+  }
+
+  createCardNoteElement(card, index) {
+    // 卡片笔记样式配置 - 紫色半透明设计
+    const style = {
+      padding: 2,
+      fontSize: 10,
+      fontWeight: 'normal',
+      backgroundColor: 'rgba(138, 43, 226, 0.7)',
+      textColor: '#ffffff',
+      borderColor: 'rgba(138, 43, 226, 0.9)',
+      borderRadius: 3,
+      minWidth: 25
+    }
+
+    // 创建文本
+    const text = new Text().text(`[[${card.basename}]]`)
+
+    // 设置文本样式
+    text.attr({
+      'font-size': style.fontSize + 'px',
+      'font-family': this.style.fontFamily,
+      'font-weight': style.fontWeight,
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle'
+    })
+
+    text.css({
+      'font-size': style.fontSize + 'px !important',
+      'line-height': '1'
+    })
+
+    // 设置文本颜色
+    if (style.textColor) {
+      text.fill(style.textColor)
+    }
+
+    // 获取文本尺寸
+    const { width: textWidth, height: textHeight } = text.bbox()
+
+    // 计算容器尺寸
+    const rectWidth = Math.max(style.minWidth, textWidth + style.padding * 2)
+    const rectHeight = textHeight + style.padding
+
+    // 创建背景矩形
+    const rect = new Rect()
+      .size(rectWidth, rectHeight)
+      .fill(style.backgroundColor)
+      .stroke({ color: style.borderColor, width: 1 })
+      .radius(style.borderRadius)
+
+    // 文本居中
+    text.center(rectWidth / 2, rectHeight / 2)
+
+    // 创建组容器
+    const group = new G()
+    group.add(rect)
+    group.add(text)
+
+    // 添加点击事件
+    group.css('cursor', 'pointer')
+    group.on('click', (e) => {
+      e.stopPropagation()
+      this.mindMap.emit('open_obsidian_file', card.path)
+    })
+
+    // 创建连接线到父节点
+    const line = this.createCardNoteLine()
+
+    return {
+      group,
+      line,
+      card,
+      width: rectWidth,
+      height: rectHeight,
+      index
+    }
+  }
+
+  createCardNoteLine() {
+    // 使用path创建更好的连接线
+    const line = this.draw.path()
+
+    // 创建蓝到紫的渐变
+    const gradient = this.draw.gradient('linear', (add) => {
+      add.stop(0, '#409eff')
+      add.stop(1, '#8b2bce')
+    })
+
+    // 设置连接线样式
+    line.fill('none').stroke({
+      color: gradient,
+      width: 1.5,
+      dasharray: '4,4',
+      linecap: 'round',
+      linejoin: 'round'
+    })
+
+    this.group.add(line)
+    return line
+  }
+
+  layoutCardNoteElements() {
+    if (!this._cardNoteElements || this._cardNoteElements.length === 0) {
+      return
+    }
+
+    // 获取卡片数量按钮的位置
+    const cardCountButton = this._cardCountData
+    let connectionStartX = 0
+    let connectionStartY = 0
+
+    try {
+      if (cardCountButton && cardCountButton.node) {
+        // 获取卡片数量按钮的实际位置
+        const buttonRect = cardCountButton.node.bbox()
+        const parentRect = this.group.bbox()
+
+        // 从按钮右边缘开始，增加更多偏移避免遮挡按钮
+        connectionStartX = buttonRect.x + buttonRect.width - parentRect.x + 8
+        connectionStartY = buttonRect.y + buttonRect.height / 2 - parentRect.y
+
+      } else {
+        // 后备方案：从节点右边缘开始
+        const parentRect = this.group.bbox()
+        connectionStartX = parentRect.width
+        connectionStartY = 0
+
+      }
+    } catch (error) {
+      // 使用更安全的后备方案
+      connectionStartX = 100  // 固定偏移
+      connectionStartY = 0
+    }
+
+    const startX = connectionStartX + 10
+    const cardSpacing = 22
+    let currentY = connectionStartY - (this._cardNoteElements.length - 1) * cardSpacing / 2
+
+    this._cardNoteElements.forEach((cardElement, index) => {
+      const { group, line, width, height } = cardElement
+
+      if (!group || !line) {
+        return
+      }
+
+      try {
+        // 设置卡片位置
+        group.move(startX, currentY - height / 2)
+
+        // 设置连接线
+        const midX = connectionStartX + (startX - connectionStartX) / 2
+        const pathData = `M ${connectionStartX} ${connectionStartY} Q ${midX} ${connectionStartY} ${startX} ${currentY}`
+        line.plot(pathData)
+
+        currentY += cardSpacing
+      } catch (error) {
+        // 忽略布局错误
+      }
+    })
+
+  }
+
+  hideCardNoteNodes() {
+    if (!this._cardNoteNodesVisible) {
+      return
+    }
+
+    // 移除所有卡片笔记元素
+    if (this._cardNoteElements) {
+      this._cardNoteElements.forEach(cardElement => {
+        if (cardElement.group) {
+          cardElement.group.remove()
+        }
+        if (cardElement.line) {
+          cardElement.line.remove()
+        }
+      })
+      this._cardNoteElements = []
+    }
+
+    this._cardNoteNodesVisible = false
+  }
+
+  // 恢复卡片笔记显示状态（在节点更新后调用）
+  restoreCardNoteState() {
+    // 如果之前卡片笔记是显示的，重新显示它们
+    if (this._cardNoteNodesVisible) {
+      const cardData = (this.nodeData.data && this.nodeData.data.cardNotes) || []
+      if (cardData.length > 0) {
+        // 清除现有的卡片笔记元素，重新创建
+        if (this._cardNoteElements) {
+          this._cardNoteElements.forEach(cardElement => {
+            if (cardElement.group) {
+              cardElement.group.remove()
+            }
+            if (cardElement.line) {
+              cardElement.line.remove()
+            }
+          })
+        }
+
+        // 重新创建和显示卡片笔记
+        this._cardNoteElements = []
+        cardData.forEach((card, index) => {
+          const cardElement = this.createCardNoteElement(card, index)
+          this._cardNoteElements.push(cardElement)
+          this.group.add(cardElement.group)
+        })
+
+        // 立即重新布局
+        requestAnimationFrame(() => {
+          this.layoutCardNoteElements()
+        })
+      }
+    }
   }
 }
 
