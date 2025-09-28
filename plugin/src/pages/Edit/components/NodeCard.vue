@@ -208,10 +208,137 @@ export default {
       }))
 
       this.activeNodes.forEach(node => {
-        node.setData('cardNotes', cardData)
+        // 使用统计逻辑工具函数
+        this.addCardToNode(node, cardData)
+        // 重新渲染节点以显示卡片数量按钮
+        node.reRender(['cardCount'])
       })
 
       this.cancel()
+    },
+
+    // 添加卡片到节点并更新统计
+    addCardToNode(node, cardData) {
+      const today = new Date().toISOString().split('T')[0]
+
+      // 直接设置到节点数据对象（更底层的方式）
+      if (!node.nodeData.data) {
+        node.nodeData.data = {}
+      }
+      node.nodeData.data.cardNotes = cardData
+
+      // 获取或初始化每日活动数据
+      let dailyActivity = node.nodeData.data.dailyActivity || {}
+
+      // 初始化今天的活动数据
+      if (!dailyActivity[today]) {
+        dailyActivity[today] = {
+          cardLinksAdded: 0,
+          masteryTriggered: false,
+          isFirstMastery: false
+        }
+      }
+
+      // 更新当天新增卡片数量
+      dailyActivity[today].cardLinksAdded = cardData.length
+
+      // 检查并触发掌握度逻辑
+      this.checkAndTriggerMastery(node, today, dailyActivity)
+
+      // 更新节点数据
+      node.nodeData.data.dailyActivity = dailyActivity
+
+      // 更新祖先节点的统计缓存
+      this.updateAncestorStats(node, cardData.length)
+    },
+
+    // 检查并触发掌握度逻辑
+    checkAndTriggerMastery(node, today, dailyActivity) {
+      const todayActivity = dailyActivity[today]
+      const cardCount = todayActivity.cardLinksAdded
+
+      // 检查是否有历史掌握记录
+      const hasHistoryMastery = Object.keys(dailyActivity).some(date =>
+        date !== today && dailyActivity[date].masteryTriggered
+      )
+
+      // 掌握逻辑判断
+      let shouldTriggerMastery = false
+
+      if (!hasHistoryMastery) {
+        // 首次学习：当天≥3张卡片 → 掌握
+        shouldTriggerMastery = cardCount >= 3
+        if (shouldTriggerMastery) {
+          todayActivity.isFirstMastery = true
+        }
+      } else {
+        // 复习：当天≥1张卡片 → 掌握
+        shouldTriggerMastery = cardCount >= 1
+      }
+
+      todayActivity.masteryTriggered = shouldTriggerMastery
+    },
+
+    // 递归更新祖先节点的统计缓存
+    updateAncestorStats(node, cardIncrement) {
+      let currentNode = node.parent
+
+      while (currentNode) {
+        // 获取或初始化统计缓存
+        if (!currentNode.nodeData.data) {
+          currentNode.nodeData.data = {}
+        }
+        let cachedStats = currentNode.nodeData.data.cachedStats || {
+          totalDescendantCards: 0,
+          maxDescendantMastery: 0
+        }
+
+        // 更新子树卡片总数
+        cachedStats.totalDescendantCards += cardIncrement
+
+        // 计算并更新子树最高熟悉度
+        const currentMastery = this.calculateNodeMastery(currentNode)
+        cachedStats.maxDescendantMastery = Math.max(cachedStats.maxDescendantMastery, currentMastery)
+
+        // 保存更新后的统计数据
+        currentNode.nodeData.data.cachedStats = cachedStats
+
+        // 继续向上更新
+        currentNode = currentNode.parent
+      }
+    },
+
+    // 计算节点的熟悉度
+    calculateNodeMastery(node) {
+      const dailyActivity = (node.nodeData.data && node.nodeData.data.dailyActivity) || {}
+      const today = new Date()
+
+      // 找到最后一次掌握的日期
+      let lastMasteryDate = null
+      let masteryCount = 0
+
+      for (const date in dailyActivity) {
+        if (dailyActivity[date].masteryTriggered) {
+          masteryCount++
+          const dateObj = new Date(date)
+          if (!lastMasteryDate || dateObj > lastMasteryDate) {
+            lastMasteryDate = dateObj
+          }
+        }
+      }
+
+      if (!lastMasteryDate) {
+        return 0 // 从未掌握
+      }
+
+      // 计算距离最后掌握的天数
+      const daysSinceLastMastery = Math.floor((today - lastMasteryDate) / (1000 * 60 * 60 * 24))
+
+      // 使用遗忘曲线计算熟悉度
+      const baseFamiliarity = Math.min(masteryCount * 0.2, 0.8) + 0.2
+      const timeFactor = Math.exp(-daysSinceLastMastery / 7)
+
+      return Math.max(0, Math.min(1, baseFamiliarity * timeFactor))
     }
   }
 }
