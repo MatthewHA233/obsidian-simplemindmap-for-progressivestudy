@@ -571,6 +571,94 @@ function measureCustomNodeContentSize(content) {
   }
 }
 
+// 创建卡片笔记数量按钮
+function createCardCountNode() {
+  const cardData = this.getData('cardNotes')
+  if (!cardData || cardData.length <= 0) {
+    return null
+  }
+
+  const count = cardData.length
+  const { cardCountStyle } = this.mindMap.opt
+  const style = {
+    fontSize: 10,
+    color: '#ffffff',
+    backgroundColor: '#409eff',
+    borderRadius: 3,
+    paddingX: 4,
+    paddingY: 2,
+    minWidth: 16,
+    height: 16,
+    ...cardCountStyle
+  }
+
+  // 创建容器节点
+  const cardCountContainer = new G()
+  cardCountContainer.addClass('smm-card-count-btn')
+
+  // 数字文本
+  const text = new Text().text(count.toString())
+  // 设置文本属性
+  text.attr({
+    'font-size': style.fontSize + 'px',
+    'font-family': this.style.fontFamily,
+    'font-weight': 'bold',
+    'text-anchor': 'middle',
+    'dominant-baseline': 'middle',
+    'fill': '#ffffff'
+  })
+
+  // 获取文本宽高
+  const { width: textWidth, height: textHeight } = text.bbox()
+
+  // 计算背景矩形尺寸
+  const rectWidth = Math.max(style.minWidth, textWidth + style.paddingX * 2)
+  const rectHeight = style.height
+
+  // 背景矩形
+  const rect = new Rect()
+    .size(rectWidth, rectHeight)
+    .fill(style.backgroundColor)
+    .radius(style.borderRadius)
+    .x(0)
+    .y(0)
+
+  // 文本居中
+  text.center(rectWidth / 2, rectHeight / 2)
+
+  // 添加到容器
+  cardCountContainer.add(rect)
+  cardCountContainer.add(text)
+
+  // 点击事件
+  cardCountContainer.css({ cursor: 'pointer' })
+  cardCountContainer.on('click', (e) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // 防止重复点击
+    if (cardCountContainer.hasClass('clicking')) {
+      return
+    }
+
+    cardCountContainer.addClass('clicking')
+
+    // 切换卡片笔记子节点显示/隐藏
+    this.toggleCardNoteNodes()
+
+    // 移除点击状态
+    setTimeout(() => {
+      cardCountContainer.removeClass('clicking')
+    }, 100)
+  })
+
+  return {
+    node: cardCountContainer,
+    width: rectWidth,
+    height: rectHeight
+  }
+}
+
 // 是否使用的是自定义节点内容
 function isUseCustomNodeContent() {
   return !!this._customNodeContent
@@ -587,6 +675,7 @@ export default {
   createTagNode,
   createNoteNode,
   createAttachmentNode,
+  createCardCountNode,
   getNoteContentPosition,
   getNodeIconSize,
   measureCustomNodeContentSize,
