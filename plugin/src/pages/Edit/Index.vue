@@ -9,7 +9,7 @@
         v-if="loadToolbar && !isZenMode && !isReadonly"
         :getContainerSize="getContainerSize"
       ></Toolbar>
-      <Edit @loadend="onMindMapLoadend"></Edit>
+      <Edit ref="editRef" @loadend="onMindMapLoadend"></Edit>
     </template>
     <OutlineEdit v-if="isOutlineEdit"></OutlineEdit>
     <Guide v-if="showGuide"></Guide>
@@ -36,7 +36,8 @@ export default {
     return {
       show: false,
       showGuide: false,
-      loadToolbar: false
+      loadToolbar: false,
+      mindMapInstance: null
     }
   },
   computed: {
@@ -66,6 +67,7 @@ export default {
     this.$root.$bus.$on('setIsDark', this.setIsDark)
     this.$root.$bus.$on('setShowGuide', this.onSetShowGuide)
     this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$on('open_obsidian_file', this.onOpenObsidianFile)
     const { isFirstUse } = this.$root.$obsidianAPI.getSettings()
     this.showGuide = (isFirstUse || false) && !isMobile
   },
@@ -75,6 +77,7 @@ export default {
     this.$root.$bus.$off('setIsDark', this.setIsDark)
     this.$root.$bus.$off('setShowGuide', this.onSetShowGuide)
     this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
+    this.$root.$bus.$off('open_obsidian_file', this.onOpenObsidianFile)
   },
   methods: {
     ...mapMutations([
@@ -86,6 +89,10 @@ export default {
 
     onMindMapLoadend() {
       this.loadToolbar = true
+      // 获取 mindMap 实例
+      if (this.$refs.editRef && this.$refs.editRef.mindMap) {
+        this.mindMapInstance = this.$refs.editRef.mindMap
+      }
     },
 
     onToggleReadonly(isReadonly) {
@@ -130,6 +137,13 @@ export default {
       this.$root.$obsidianAPI.updateSettings({
         isFirstUse: false
       })
+    },
+
+    onOpenObsidianFile(filePath) {
+      // 使用Obsidian API打开文件
+      if (this.$root.$obsidianAPI) {
+        this.$root.$obsidianAPI.openFile(filePath)
+      }
     }
   }
 }
