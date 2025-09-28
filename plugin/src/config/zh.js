@@ -611,6 +611,7 @@ export const iconNameMap = {
   link: '插入超链接',
   note: '插入备注',
   tag: '插入标签',
+  card: '插入卡片笔记',
   summary: '插入概要',
   associativeLine: '添加关联线',
   formula: '插入数学公式',

@@ -133,6 +133,16 @@
         <span class="icon iconfont icontag" style="font-size: 19px;"></span>
       </div>
       <div
+        v-if="item === 'card'"
+        class="toolbarBtn"
+        :class="{
+          disabled: activeNodes.length <= 0
+        }"
+        @click="$root.$bus.$emit('showNodeCard')"
+      >
+        <span class="icon iconfont iconwenjian" style="font-size: 19px;"></span>
+      </div>
+      <div
         v-if="item === 'summary'"
         class="toolbarBtn"
         :class="{

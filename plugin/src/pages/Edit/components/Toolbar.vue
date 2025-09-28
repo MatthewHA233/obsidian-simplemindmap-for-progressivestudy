@@ -29,6 +29,7 @@
     <NodeIcon></NodeIcon>
     <NodeNote></NodeNote>
     <NodeTag></NodeTag>
+    <NodeCard></NodeCard>
     <Export></Export>
     <Import ref="ImportRef"></Import>
   </div>
@@ -40,6 +41,7 @@ import NodeHyperlink from './NodeHyperlink.vue'
 import NodeIcon from './NodeIcon.vue'
 import NodeNote from './NodeNote.vue'
 import NodeTag from './NodeTag.vue'
+import NodeCard from './NodeCard.vue'
 import Export from './Export.vue'
 import Import from './Import.vue'
 import { mapState } from 'vuex'
@@ -56,6 +58,7 @@ const defaultBtnList = [
   'link',
   'note',
   'tag',
+  'card', // 新增卡片笔记按钮
   'summary',
   'associativeLine',
   'formula',
@@ -69,6 +72,7 @@ export default {
     NodeIcon,
     NodeNote,
     NodeTag,
+    NodeCard,
     Export,
     Import,
     ToolbarNodeBtnList

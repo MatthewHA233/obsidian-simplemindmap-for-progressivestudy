@@ -275,6 +275,12 @@ export default {
     title: '标签',
     addTip: '请按回车键添加，最多可添加五个标签'
   },
+  nodeCard: {
+    title: '卡片笔记',
+    searchPlaceholder: '搜索笔记文件名...',
+    selectedCards: '已选择的卡片',
+    add: '添加'
+  },
   outline: {
     title: '大纲',
     nodeDefaultText: '分支节点',
