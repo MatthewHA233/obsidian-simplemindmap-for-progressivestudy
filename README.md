@@ -1,12 +1,27 @@
 【[English](./README_en.md) | 简体中文】
 
-# SimpleMindMap 插件
+# SimpleMindMap 渐进式学习特化插件
 
-为 Obsidian 提供一个好用的思维导图插件。
+为 Obsidian 提供一个专门针对渐进式学习的智能思维导图插件，结合卡片笔记系统打造高效学习工具。
 
-本插件思维导图功能建立在[mind-map](https://github.com/wanglin2/mind-map)项目之上，mind-map 项目提供了一个 js 思维导图库，以及一个完整的在线版思维导图。
+## 项目基础
 
-mind-map 也提供了独立的思维导图客户端，可以点击[客户端](https://github.com/wanglin2/mind-map/releases)了解更多。
+本插件基于以下开源项目开发：
+
+- **插件框架**: [obsidian-simplemindmap](https://github.com/wanglin2/obsidian-simplemindmap) - Obsidian 思维导图插件基础框架
+- **思维导图核心**: [mind-map](https://github.com/wanglin2/mind-map) (Commit 919b151, Jul 4) - 提供强大的 JavaScript 思维导图库
+- **自动化功能**: [ProgressiveStudyIncentivePlayer](https://github.com/MatthewHA233/ProgressiveStudyIncentivePlayer) - 渐进式学习自动化组件
+
+## 特化目标
+
+本版本专为渐进式学习和知识管理场景进行定制开发，旨在：
+
+- 更好地配合 Obsidian 卡片笔记系统的使用习惯
+- 优化思维导图在知识体系构建中的体验
+- 集成自动化功能以提升学习效率
+- 针对渐进式学习模式进行界面和交互优化
+
+具体的特化功能正在持续开发中，将根据实际使用需求不断完善。
 
 # 功能清单
 
@@ -168,9 +183,86 @@ mind-map 也提供了独立的思维导图客户端，可以点击[客户端](ht
 
 # bug、建议、需求
 
-有任何bug、建议、需求反馈可在[Issues](https://github.com/wanglin2/obsidian-simplemindmap/issues)里提交。
+有任何bug、建议、需求反馈可在[Issues](https://github.com/MatthewHA233/obsidian-simplemindmap-for-progressivestudy/issues)里提交。
 
-# 微信公众号
+# 项目部署
+
+本项目采用本地魔改 simple-mind-map 包的开发模式，以便自定义思维导图功能。
+
+## 项目结构
+
+```
+obsidian-simplemindmap-for-progressivestudy/
+├── plugin/                    # Obsidian 插件主体
+│   ├── package.json          # 插件依赖配置
+│   └── ...
+├── simple-mind-map/          # 本地魔改的思维导图库
+│   ├── package.json          # 库依赖配置
+│   └── ...
+└── README.md
+```
+
+## 部署步骤
+
+### 1. 安装依赖
+
+首先安装 simple-mind-map 库的依赖：
+```bash
+cd simple-mind-map
+npm install
+```
+
+然后安装插件的依赖：
+```bash
+cd plugin
+npm install
+```
+
+### 2. 设置本地包链接
+
+本项目使用 npm link 将本地的 simple-mind-map 包链接到插件中：
+
+在 simple-mind-map 目录创建全局链接：
+```bash
+cd simple-mind-map
+npm link
+```
+
+在 plugin 目录链接到本地包：
+```bash
+cd plugin
+npm link simple-mind-map
+```
+
+### 3. 开发模式
+
+启动开发模式（支持热更新）：
+```bash
+cd plugin
+npm run dev
+```
+
+### 4. 构建生产版本
+
+构建插件的生产版本：
+```bash
+cd plugin
+npm run build
+```
+
+## 配置说明
+
+- `plugin/package.json` 中的 `simple-mind-map` 依赖已配置为 `"file:../simple-mind-map"`
+- 这样可以直接引用本地的 simple-mind-map 包，无需发布到 npm
+- 任何对 `simple-mind-map/` 目录的修改都会直接反映到插件中
+
+## 注意事项
+
+- 请确保 `cross-env` 已安装作为开发依赖
+- 修改 simple-mind-map 包后，需要重新构建插件才能看到效果
+- 如果遇到依赖问题，可以删除 `node_modules` 重新安装
+
+# （原项目作者）微信公众号
 
 <table>
     <tr>
