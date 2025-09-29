@@ -871,17 +871,17 @@ export default {
           obLinkMap[hyperlinkTitle] = true
         }
 
-        // 卡片笔记 - 只在textdata中生成节点定位信息
+        // 卡片笔记 - 只在textData中生成带节点定位的双向链接
         const cardNotes = node.data?.cardNotes || []
         cardNotes.forEach(card => {
           if (card.basename) {
             // 获取纯文本节点内容，去除HTML标签
             let nodeText = node.data?.text || '节点'
-            // 去除HTML标签，只保留纯文本
             nodeText = nodeText.replace(/<[^>]*>/g, '').trim()
 
-            // 在textdata中添加卡片信息，用于节点定位（显示为"提到当前文件名"）
-            textData.push(`【${nodeText}】节点所链接的卡片笔记${card.basename} ^${node.data.uid}`)
+            // 只在textData中生成带有节点定位的内容，用于精确跳转
+            // 这样既能被metadataCache识别，又能精确定位到节点
+            textData.push(`节点【${nodeText}】引用了 [[${card.basename}]] ^${node.data.uid}`)
           }
         })
       })
