@@ -239,6 +239,13 @@ class SmmEditView extends TextFileView {
       getInitLocationNodeId: () => {
         return initLocationNodeId
       },
+      // 获取当前文件名（不含扩展名）
+      getCurrentFileName: () => {
+        if (this.file?.basename) {
+          return this.file.basename
+        }
+        return 'MindMap'
+      },
       // 从思维导图获取最新数据
       getMindMapCurrentData: (content, linkData, textData) => {
         this.parsedMindMapData.metadata.content = content

@@ -870,6 +870,20 @@ export default {
         ) {
           obLinkMap[hyperlinkTitle] = true
         }
+
+        // 卡片笔记 - 只在textdata中生成节点定位信息
+        const cardNotes = node.data?.cardNotes || []
+        cardNotes.forEach(card => {
+          if (card.basename) {
+            // 获取纯文本节点内容，去除HTML标签
+            let nodeText = node.data?.text || '节点'
+            // 去除HTML标签，只保留纯文本
+            nodeText = nodeText.replace(/<[^>]*>/g, '').trim()
+
+            // 在textdata中添加卡片信息，用于节点定位（显示为"提到当前文件名"）
+            textData.push(`【${nodeText}】节点所链接的卡片笔记${card.basename} ^${node.data.uid}`)
+          }
+        })
       })
       return {
         linkData: Object.keys(obLinkMap).map(key => {
