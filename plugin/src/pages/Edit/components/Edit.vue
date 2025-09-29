@@ -610,7 +610,8 @@ export default {
         'node_note_dblclick',
         'node_mousedown',
         'node_img_dblclick',
-        'open_obsidian_file'
+        'open_obsidian_file',
+        'show_obsidian_preview'
       ].forEach(event => {
         mindMap.on(event, (...args) => {
           this.$root.$bus.$emit(event, ...args)
