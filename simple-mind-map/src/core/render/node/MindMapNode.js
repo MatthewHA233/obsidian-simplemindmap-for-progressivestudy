@@ -168,6 +168,17 @@ class MindMapNode {
     // 初始需要计算一下概要节点的大小，否则计算布局时获取不到概要的大小
     this.updateGeneralization()
     this.initDragHandle()
+
+    // 注册卡片笔记和数字按钮相关事件监听器
+    this.registerCardNoteEventListeners()
+  }
+
+  // 注册卡片笔记相关事件监听器（现在只保留内部删除事件）
+  registerCardNoteEventListeners() {
+    // 保留删除事件监听，因为统一的删除方法还是需要的
+    this.mindMap.on('delete_card_note', (node, cardIndex) => {
+      this.onDeleteCardNote(node, cardIndex)
+    })
   }
 
   // 支持自定义位置
@@ -1178,7 +1189,7 @@ class MindMapNode {
   }
 
   createCardNoteElement(card, index) {
-    // 卡片笔记样式配置 - 紫色半透明设计
+    // 使用默认卡片样式配置
     const style = {
       padding: 2,
       fontSize: 10,
@@ -1215,7 +1226,7 @@ class MindMapNode {
     // 获取文本尺寸
     const { width: textWidth, height: textHeight } = text.bbox()
 
-    // 计算容器尺寸
+    // 计算容器尺寸（不为删除按钮预留空间）
     const rectWidth = Math.max(style.minWidth, textWidth + style.padding * 2)
     const rectHeight = textHeight + style.padding
 
@@ -1229,10 +1240,21 @@ class MindMapNode {
     // 文本居中
     text.center(rectWidth / 2, rectHeight / 2)
 
+    // 创建删除按钮
+    const deleteBtn = this.createDeleteButton()
+    const deleteButtonSize = 18
+
+    // 删除按钮定位到卡片右侧外侧，垂直居中，距离更近
+    deleteBtn.group.move(rectWidth - 1, (rectHeight - deleteButtonSize) / 2)
+
     // 创建组容器
     const group = new G()
     group.add(rect)
     group.add(text)
+    group.add(deleteBtn.group)
+
+    // 删除按钮默认隐藏
+    deleteBtn.group.hide()
 
     // 添加双击事件打开文件
     group.css('cursor', 'pointer')
@@ -1267,12 +1289,23 @@ class MindMapNode {
       isMouseOver = true
       previewTriggered = false
       document.addEventListener('keydown', handleKeyDown)
+      // 显示删除按钮
+      deleteBtn.group.show()
     })
 
     group.on('mouseleave', () => {
       isMouseOver = false
       previewTriggered = false
       document.removeEventListener('keydown', handleKeyDown)
+      // 隐藏删除按钮
+      deleteBtn.group.hide()
+    })
+
+    // 删除按钮点击事件
+    deleteBtn.group.on('click', (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      this.confirmDeleteCard(index)
     })
 
     // 创建连接线到父节点
@@ -1425,6 +1458,171 @@ class MindMapNode {
         })
       }
     }
+  }
+
+
+  onDeleteCardNote(node, cardIndex) {
+    // 检查节点是否有效
+    if (!node || !node.uid) {
+      return
+    }
+
+    // 使用节点UID进行比较，而不是对象引用
+    if (node.uid !== this.uid) {
+      return
+    }
+
+    // 从节点数据中删除卡片
+    const cardData = [...(this.nodeData.data?.cardNotes || [])]
+
+    if (cardIndex >= 0 && cardIndex < cardData.length) {
+      // 获取被删除卡片的添加日期
+      const deletedCard = cardData[cardIndex]
+      const deletedDate = deletedCard.addedAt
+
+      // 从数组中删除卡片
+      cardData.splice(cardIndex, 1)
+
+      // 直接更新节点数据对象
+      if (!this.nodeData.data) {
+        this.nodeData.data = {}
+      }
+      this.nodeData.data.cardNotes = cardData
+
+      // 更新对应日期的统计数据
+      this.updateDailyActivityAfterDeletion(deletedDate, cardData)
+
+      // 更新祖先节点统计缓存
+      this.updateAncestorStatsAfterDeletion()
+
+      // 重新显示卡片笔记
+      this.hideCardNoteNodes()
+      if (cardData.length > 0) {
+        this.showCardNoteNodes(cardData)
+      }
+
+      // 更新数字按钮
+      this.reRender(['cardCount'])
+    }
+  }
+
+  // 删除卡片后更新对应日期的统计数据
+  updateDailyActivityAfterDeletion(deletedDate, remainingCardData) {
+    // 获取每日活动数据
+    let dailyActivity = this.nodeData.data.dailyActivity || {}
+
+    if (dailyActivity[deletedDate]) {
+      // 计算该日期剩余的卡片数量
+      const remainingCardsForDate = remainingCardData.filter(card => card.addedAt === deletedDate).length
+      dailyActivity[deletedDate].cardLinksAdded = remainingCardsForDate
+
+      // 重新检查该日期的掌握状态
+      this.recheckMasteryForDate(deletedDate, dailyActivity)
+
+      // 更新节点数据
+      this.nodeData.data.dailyActivity = dailyActivity
+    }
+  }
+
+  // 重新检查指定日期的掌握状态
+  recheckMasteryForDate(date, dailyActivity) {
+    const dateActivity = dailyActivity[date]
+    const cardCount = dateActivity.cardLinksAdded
+
+    // 检查是否有历史掌握记录（除了当前日期）
+    const hasHistoryMastery = Object.keys(dailyActivity).some(d =>
+      d !== date && dailyActivity[d].masteryTriggered
+    )
+
+    // 重新判断掌握状态
+    let shouldTriggerMastery = false
+
+    if (!hasHistoryMastery) {
+      // 首次学习：当天≥3张卡片 → 掌握
+      shouldTriggerMastery = cardCount >= 3
+      if (shouldTriggerMastery) {
+        dateActivity.isFirstMastery = true
+      } else {
+        dateActivity.isFirstMastery = false
+      }
+    } else {
+      // 复习：当天≥1张卡片 → 掌握
+      shouldTriggerMastery = cardCount >= 1
+    }
+
+    dateActivity.masteryTriggered = shouldTriggerMastery
+  }
+
+  // 更新祖先节点统计缓存（删除后减少1张卡片）
+  updateAncestorStatsAfterDeletion() {
+    let currentNode = this.parent
+
+    while (currentNode) {
+      // 获取或初始化统计缓存
+      if (!currentNode.nodeData.data) {
+        currentNode.nodeData.data = {}
+      }
+      let cachedStats = currentNode.nodeData.data.cachedStats || {
+        totalDescendantCards: 0,
+        maxDescendantMastery: 0
+      }
+
+      // 更新子树卡片总数（减少1张）
+      cachedStats.totalDescendantCards = Math.max(0, cachedStats.totalDescendantCards - 1)
+
+      // 保存更新后的统计数据
+      currentNode.nodeData.data.cachedStats = cachedStats
+
+      // 继续向上更新
+      currentNode = currentNode.parent
+    }
+  }
+
+  // 创建删除按钮
+  createDeleteButton() {
+    const buttonSize = 18
+
+    // 创建圆形背景（默认透明）
+    const circle = new Rect()
+      .size(buttonSize, buttonSize)
+      .radius(buttonSize / 2)
+      .fill('transparent')
+      .css('cursor', 'pointer')
+
+    // 创建删除图标（×）
+    const icon = new Text()
+      .text('×')
+      .font({
+        size: 13,
+        weight: 'bold',
+        anchor: 'middle'
+      })
+      .fill('#666')
+      .center(buttonSize / 2, buttonSize / 2)
+
+    // 创建按钮组
+    const group = new G()
+    group.add(circle)
+    group.add(icon)
+
+    // 添加悬浮效果
+    group.on('mouseenter', () => {
+      circle.fill('rgba(255, 71, 87, 0.1)') // 淡红色透明背景
+      icon.fill('#ff4757') // 图标变红色
+    })
+
+    group.on('mouseleave', () => {
+      circle.fill('transparent') // 背景变透明
+      icon.fill('#666') // 图标恢复灰色
+    })
+
+    return { group, circle, icon }
+  }
+
+  // 确认删除卡片
+  confirmDeleteCard(cardIndex) {
+    // 通过 mindMap 触发确认对话框事件
+    this.mindMap.emit('confirm_delete_card', this, cardIndex)
   }
 }
 

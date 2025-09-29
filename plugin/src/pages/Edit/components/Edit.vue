@@ -581,6 +581,9 @@ export default {
 
       this.loadPlugins(mindMap)
 
+      // 卡片删除确认对话框
+      mindMap.on('confirm_delete_card', this.onConfirmDeleteCard)
+
       // 转发事件
       ;[
         'node_active',
@@ -638,6 +641,7 @@ export default {
     onFirstNodeTreeRenderEnd() {
       this.mindMap = this.tmpMindMap
       this.tmpMindMap = null
+
       // 判断是否需要定位到某个节点
       let nodeId = this.$root.$obsidianAPI.getInitLocationNodeId()
       if (nodeId) {
@@ -657,6 +661,28 @@ export default {
         return
       }
       this.mindMap.execCommand('GO_TARGET_NODE', uid)
+    },
+
+    // 确认删除卡片对话框
+    onConfirmDeleteCard(node, cardIndex) {
+      const cardData = node.nodeData.data?.cardNotes?.[cardIndex]
+      if (!cardData) return
+
+      this.$confirm(
+        `确定要删除卡片笔记 "${cardData.basename}" 吗？`,
+        '确认删除',
+        {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning',
+          customClass: 'smmCustomElConfirm'
+        }
+      ).then(() => {
+        // 用户确认删除，直接调用删除方法
+        node.onDeleteCardNote(node, cardIndex)
+      }).catch(() => {
+        // 用户取消删除，不做任何操作
+      })
     },
 
     // 加载相关插件
