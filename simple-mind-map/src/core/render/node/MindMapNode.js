@@ -1234,11 +1234,45 @@ class MindMapNode {
     group.add(rect)
     group.add(text)
 
-    // 添加点击事件
+    // 添加双击事件打开文件
     group.css('cursor', 'pointer')
-    group.on('click', (e) => {
+    group.on('dblclick', (e) => {
       e.stopPropagation()
+      e.preventDefault()
       this.mindMap.emit('open_obsidian_file', card.path)
+    })
+
+    // Ctrl+悬浮预览功能 - 经过测试验证的有效实现
+    let isMouseOver = false
+    let previewTriggered = false
+
+    const checkAndTriggerPreview = () => {
+      if (isMouseOver && !previewTriggered) {
+        previewTriggered = true
+        this.mindMap.emit('show_obsidian_preview', {
+          path: card.path,
+          linkText: card.basename,
+          sourceElement: group.node
+        })
+      }
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        checkAndTriggerPreview()
+      }
+    }
+
+    group.on('mouseenter', () => {
+      isMouseOver = true
+      previewTriggered = false
+      document.addEventListener('keydown', handleKeyDown)
+    })
+
+    group.on('mouseleave', () => {
+      isMouseOver = false
+      previewTriggered = false
+      document.removeEventListener('keydown', handleKeyDown)
     })
 
     // 创建连接线到父节点
