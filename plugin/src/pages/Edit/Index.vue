@@ -68,6 +68,7 @@ export default {
     this.$root.$bus.$on('setShowGuide', this.onSetShowGuide)
     this.$root.$bus.$on('toggleReadonly', this.onToggleReadonly)
     this.$root.$bus.$on('open_obsidian_file', this.onOpenObsidianFile)
+    this.$root.$bus.$on('show_obsidian_preview', this.onShowObsidianPreview)
     const { isFirstUse } = this.$root.$obsidianAPI.getSettings()
     this.showGuide = (isFirstUse || false) && !isMobile
   },
@@ -78,6 +79,7 @@ export default {
     this.$root.$bus.$off('setShowGuide', this.onSetShowGuide)
     this.$root.$bus.$off('toggleReadonly', this.onToggleReadonly)
     this.$root.$bus.$off('open_obsidian_file', this.onOpenObsidianFile)
+    this.$root.$bus.$off('show_obsidian_preview', this.onShowObsidianPreview)
   },
   methods: {
     ...mapMutations([
@@ -143,6 +145,31 @@ export default {
       // 使用Obsidian API打开文件
       if (this.$root.$obsidianAPI) {
         this.$root.$obsidianAPI.openFile(filePath)
+      }
+    },
+
+    onShowObsidianPreview(previewData) {
+      if (!this.$root.$obsidianAPI) return
+
+      const { linkText, sourceElement } = previewData
+
+      const app = window.app || this.$root.$obsidianAPI.app || this.$root.$obsidianAPI
+      const workspace = app?.workspace || this.$root.$obsidianAPI?.workspace || window.workspace
+
+      if (workspace?.trigger) {
+        workspace.trigger('hover-link', {
+          event: new MouseEvent('mouseover', {
+            bubbles: true,
+            cancelable: true,
+            ctrlKey: true,
+            view: window
+          }),
+          source: 'mind-map-card',
+          hoverParent: document.body,
+          targetEl: sourceElement,
+          linktext: linkText,
+          sourcePath: ''
+        })
       }
     }
   }
